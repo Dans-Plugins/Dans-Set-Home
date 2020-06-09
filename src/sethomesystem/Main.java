@@ -85,7 +85,7 @@ public class Main extends JavaPlugin implements Listener {
                 String nextName = loadReader.nextLine();
                 HomeRecord temp = new HomeRecord();
                 temp.setPlayerName(nextName);
-                temp.load(nextName + ".txt"); // provides owner field among other things
+                temp.load(nextName); // provides owner field among other things
 
                 // existence check
                 boolean exists = false;
