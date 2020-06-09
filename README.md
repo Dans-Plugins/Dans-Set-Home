@@ -1,5 +1,5 @@
 # What is this?
-A minecraft plugin for players to use to organize politically.
+A minecraft plugin that lets players set a home and teleport to their home.
 
 # Notes
 - Project building must be done with Java 8 unless your test server is expecting another version.
