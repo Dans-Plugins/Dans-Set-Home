@@ -1,5 +1,6 @@
 package sethomesystem;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -111,6 +112,7 @@ public class Main extends JavaPlugin {
                 for (HomeRecord record : homeRecords) {
                     if (record.getPlayerName().equalsIgnoreCase(player.getName())) {
                         record.setHomeLocation(player.getLocation());
+                        player.sendMessage(ChatColor.GREEN + "Home set!");
                         return true;
                     }
                 }
@@ -123,7 +125,13 @@ public class Main extends JavaPlugin {
                 Player player = (Player) sender;
                 for (HomeRecord record : homeRecords) {
                     if (record.getPlayerName().equalsIgnoreCase(player.getName())) {
-                        player.teleport(record.getHomeLocation());
+                        if (record.getHomeLocation() != null) {
+                            player.teleport(record.getHomeLocation());
+                        }
+                        else {
+                            player.sendMessage(ChatColor.RED + "Home not set!");
+                        }
+
                         return true;
                     }
                 }

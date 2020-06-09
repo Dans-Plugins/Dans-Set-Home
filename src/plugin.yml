@@ -2,3 +2,5 @@ name: Medieval-Set-Home
 main: sethomesystem.Main.java
 version: 0.3
 commands:
+  home:
+  sethome:
