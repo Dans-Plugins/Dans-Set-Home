@@ -1,0 +1,4 @@
+name: Medieval-Set-Home
+main: sethomesystem.Main.java
+version: 0.1
+commands:
