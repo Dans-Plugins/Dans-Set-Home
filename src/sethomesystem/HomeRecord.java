@@ -45,7 +45,7 @@ public class HomeRecord {
                 System.out.println("Save file for faction " + playerName + " already exists. Altering.");
             }
 
-            FileWriter saveWriter = new FileWriter("./plugins/medievalfactions/" + playerName + ".txt");
+            FileWriter saveWriter = new FileWriter("./plugins/Medieval-Set-Home/" + playerName + ".txt");
 
             // actual saving takes place here
             saveWriter.write(playerName + "\n");
