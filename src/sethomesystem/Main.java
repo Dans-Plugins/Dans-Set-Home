@@ -1,5 +1,8 @@
 package sethomesystem;
 
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -95,6 +98,37 @@ public class Main extends JavaPlugin {
         } catch (FileNotFoundException e) {
             System.out.println("Error loading the factions!");
         }
+    }
+
+    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+
+        // sethome command
+        if (label.equalsIgnoreCase("sethome")) {
+            if (sender instanceof Player) {
+                Player player = (Player) sender;
+                for (HomeRecord record : homeRecords) {
+                    if (record.getPlayerName().equalsIgnoreCase(player.getName())) {
+                        record.setHomeLocation(player.getLocation());
+                        return true;
+                    }
+                }
+            }
+        }
+
+        // home command
+        if (label.equalsIgnoreCase("home")) {
+            if (sender instanceof Player) {
+                Player player = (Player) sender;
+                for (HomeRecord record : homeRecords) {
+                    if (record.getPlayerName().equalsIgnoreCase(player.getName())) {
+                        player.teleport(record.getHomeLocation());
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
 }
