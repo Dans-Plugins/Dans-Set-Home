@@ -8,3 +8,4 @@ A minecraft plugin that lets players set a home and teleport to their home.
 # Versions
 -  0.1 Initial Build
 -  0.2 'HomeRecord Class' update
+-  0.3 'Setting & Teleportation' update

@@ -3,6 +3,8 @@ package sethomesystem;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -128,6 +130,25 @@ public class Main extends JavaPlugin {
             }
         }
 
+        return false;
+    }
+
+    @EventHandler()
+    public void onJoin(PlayerJoinEvent event) {
+        if (!hasHomeRecord(event.getPlayer().getName())) {
+            HomeRecord newRecord = new HomeRecord();
+            newRecord.setPlayerName(event.getPlayer().getName());
+
+            homeRecords.add(newRecord);
+        }
+    }
+
+    public boolean hasHomeRecord(String playerName) {
+        for (HomeRecord record : homeRecords) {
+            if (record.getPlayerName().equalsIgnoreCase(playerName)) {
+                return true;
+            }
+        }
         return false;
     }
 
