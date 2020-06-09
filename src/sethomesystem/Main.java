@@ -2,7 +2,11 @@ package sethomesystem;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.ArrayList;
+
 public class Main extends JavaPlugin {
+
+    ArrayList<HomeRecord> homeRecords = new ArrayList<>();
 
     @Override
     public void onEnable() {
