@@ -21,4 +21,12 @@ public class HomeRecord {
     public Location getHomeLocation() {
         return homeLocation;
     }
+
+    public void save() {
+
+    }
+
+    public void load() {
+
+    }
 }
