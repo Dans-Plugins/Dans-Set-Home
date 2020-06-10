@@ -130,6 +130,7 @@ public class Main extends JavaPlugin implements Listener {
                     if (record.getPlayerName().equalsIgnoreCase(player.getName())) {
                         if (record.getHomeLocation() != null) {
                             player.teleport(record.getHomeLocation());
+                            player.sendMessage(ChatColor.GREEN + "Teleporting.");
                         }
                         else {
                             player.sendMessage(ChatColor.RED + "Home not set!");
