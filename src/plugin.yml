@@ -1,0 +1,9 @@
+name: MedievalSetHome
+version: "0.3"
+author: KingdomProgrammers
+main: sethomesystem.Main
+api-version: "1.15"
+
+commands:
+  home:
+  sethome:
