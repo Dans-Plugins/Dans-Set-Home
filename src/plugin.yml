@@ -1,5 +1,5 @@
 name: MedievalSetHome
-version: "0.3"
+version: "0.4"
 author: KingdomProgrammers
 main: sethomesystem.Main
 api-version: "1.15"
