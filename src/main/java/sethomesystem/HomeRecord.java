@@ -40,9 +40,9 @@ public class HomeRecord {
             }
             File saveFile = new File("./plugins/Medieval-Set-Home/" + playerName + ".txt");
             if (saveFile.createNewFile()) {
-                System.out.println("Save file for faction " + playerName + " created.");
+                System.out.println("Save file for record of " + playerName + " created.");
             } else {
-                System.out.println("Save file for faction " + playerName + " already exists. Altering.");
+                System.out.println("Save file for record of " + playerName + " already exists. Altering.");
             }
 
             FileWriter saveWriter = new FileWriter("./plugins/Medieval-Set-Home/" + playerName + ".txt");
@@ -61,10 +61,10 @@ public class HomeRecord {
 
             saveWriter.close();
 
-            System.out.println("Successfully saved faction " + playerName + ".");
+            System.out.println("Successfully saved record belonging to  " + playerName + ".");
 
         } catch (IOException e) {
-            System.out.println("An error occurred saving the faction named " + playerName);
+            System.out.println("An error occurred saving the record belonging to " + playerName);
             e.printStackTrace();
         }
     }
@@ -119,7 +119,7 @@ public class HomeRecord {
                     System.out.println("Home of " + playerName + " successfully set to " + x + ", " + y + ", " + z + ".");
                 }
                 else {
-                    System.out.println("One of the variables the faction home location depends on wasn't loaded!");
+                    System.out.println("One of the variables the home location depends on wasn't loaded!");
                 }
 
             }
