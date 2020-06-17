@@ -183,7 +183,7 @@ public class Main extends JavaPlugin implements Listener {
 
             // forcesave
             if (args[0].equalsIgnoreCase("forcesave")) {
-                if (!(sender instanceof Player)) {
+                if (sender instanceof Player) {
                     sender.sendMessage(ChatColor.RED + "This command can only be used from the console.");
                     return false;
                 }
