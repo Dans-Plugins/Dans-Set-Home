@@ -21,27 +21,29 @@ import static org.bukkit.Bukkit.getServer;
 
 public class Main extends JavaPlugin implements Listener {
 
+    private boolean debug = false;
+
     ArrayList<HomeRecord> homeRecords = new ArrayList<>();
 
     @Override
     public void onEnable() {
-        System.out.println("Medieval Set Home plugin enabling...");
+        if (debug) { System.out.println("Medieval Set Home plugin enabling..."); }
 
         this.getServer().getPluginManager().registerEvents(this, this);
 
         loadHomeRecords();
 
-        System.out.println("Medieval Set Home plugin enabled.");
+        if (debug) { System.out.println("Medieval Set Home plugin enabled."); }
     }
 
     @Override
     public void onDisable() {
-        System.out.println("Medieval Set Home plugin disabling...");
+        if (debug) { System.out.println("Medieval Set Home plugin disabling..."); }
 
         saveHomeRecordFileNames();
         saveHomeRecords();
 
-        System.out.println("Medieval Set Home plugin disabled.");
+        if (debug) { System.out.println("Medieval Set Home plugin disabled."); }
     }
 
     public void saveHomeRecordFileNames() {
@@ -52,9 +54,9 @@ public class Main extends JavaPlugin implements Listener {
             }
             File saveFile = new File("./plugins/Medieval-Set-Home/" + "home-record-filenames.txt");
             if (saveFile.createNewFile()) {
-                System.out.println("Save file for home record filenames created.");
+                if (debug) { System.out.println("Save file for home record filenames created."); }
             } else {
-                System.out.println("Save file for home record filenames already exists. Overwriting.");
+                if (debug) { System.out.println("Save file for home record filenames already exists. Overwriting."); }
             }
 
             FileWriter saveWriter = new FileWriter(saveFile);
@@ -67,7 +69,7 @@ public class Main extends JavaPlugin implements Listener {
             saveWriter.close();
 
         } catch (IOException e) {
-            System.out.println("An error occurred while saving home record filenames.");
+            if (debug) { System.out.println("An error occurred while saving home record filenames."); }
         }
     }
 
@@ -79,7 +81,7 @@ public class Main extends JavaPlugin implements Listener {
 
     public void loadHomeRecords() {
         try {
-            System.out.println("Attempting to load home records...");
+            if (debug) { System.out.println("Attempting to load home records..."); }
             File loadFile = new File("./plugins/Medieval-Set-Home/" + "home-record-filenames.txt");
             Scanner loadReader = new Scanner(loadFile);
 
@@ -103,9 +105,9 @@ public class Main extends JavaPlugin implements Listener {
             }
 
             loadReader.close();
-            System.out.println("Home records successfully loaded.");
+            if (debug) { System.out.println("Home records successfully loaded."); }
         } catch (FileNotFoundException e) {
-            System.out.println("Error loading the factions!");
+            if (debug) { System.out.println("Error loading the factions!"); }
         }
     }
 

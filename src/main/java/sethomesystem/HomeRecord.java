@@ -13,6 +13,9 @@ import java.util.Scanner;
 import static org.bukkit.Bukkit.getServer;
 
 public class HomeRecord {
+
+    private boolean debug = false;
+
     private String playerName = "";
     private Location homeLocation = null;
 
@@ -40,9 +43,9 @@ public class HomeRecord {
             }
             File saveFile = new File("./plugins/Medieval-Set-Home/" + playerName + ".txt");
             if (saveFile.createNewFile()) {
-                System.out.println("Save file for record of " + playerName + " created.");
+                if (debug) { System.out.println("Save file for record of " + playerName + " created."); }
             } else {
-                System.out.println("Save file for record of " + playerName + " already exists. Altering.");
+                if (debug) { System.out.println("Save file for record of " + playerName + " already exists. Altering."); }
             }
 
             FileWriter saveWriter = new FileWriter("./plugins/Medieval-Set-Home/" + playerName + ".txt");
@@ -61,10 +64,10 @@ public class HomeRecord {
 
             saveWriter.close();
 
-            System.out.println("Successfully saved record belonging to  " + playerName + ".");
+            if (debug) { System.out.println("Successfully saved record belonging to  " + playerName + "."); }
 
         } catch (IOException e) {
-            System.out.println("An error occurred saving the record belonging to " + playerName);
+            if (debug) { System.out.println("An error occurred saving the record belonging to " + playerName); }
             e.printStackTrace();
         }
     }
@@ -85,53 +88,53 @@ public class HomeRecord {
             double z = 0;
 
             try {
-                System.out.println("Attempting to load home location for " + playerName + "...");
+                if (debug) { System.out.println("Attempting to load home location for " + playerName + "..."); }
 
                 if (loadReader.hasNextLine()) {
                     world = getServer().createWorld(new WorldCreator(loadReader.nextLine()));
-                    System.out.println("World successfully acquired.");
+                    if (debug) { System.out.println("World successfully acquired."); }
                 }
                 else {
-                    System.out.println("World name not found in file!");
+                    if (debug) { System.out.println("World name not found in file!"); }
                 }
                 if (loadReader.hasNextLine()) {
                     x = Double.parseDouble(loadReader.nextLine());
                 }
                 else {
-                    System.out.println("X position not found in file!");
+                    if (debug) { System.out.println("X position not found in file!"); }
                 }
                 if (loadReader.hasNextLine()) {//
                     y = Double.parseDouble(loadReader.nextLine());
                 }
                 else {
-                    System.out.println("Y position not found in file!");
+                    if (debug) { System.out.println("Y position not found in file!"); }
                 }
                 if (loadReader.hasNextLine()) {
                     z = Double.parseDouble(loadReader.nextLine());
                 }
                 else {
-                    System.out.println("Z position not found in file!");
+                    if (debug) { System.out.println("Z position not found in file!"); }
                 }
 
                 // set location
                 if (world != null && x != 0 && y != 0 && z != 0) {
                     homeLocation = new Location(world, x, y, z);
-                    System.out.println("Home of " + playerName + " successfully set to " + x + ", " + y + ", " + z + ".");
+                    if (debug) { System.out.println("Home of " + playerName + " successfully set to " + x + ", " + y + ", " + z + "."); }
                 }
                 else {
-                    System.out.println("One of the variables the home location depends on wasn't loaded!");
+                    if (debug) { System.out.println("One of the variables the home location depends on wasn't loaded!"); }
                 }
 
             }
             catch(Exception e) {
-                System.out.println("An error occurred loading the home position.");
+                if (debug) { System.out.println("An error occurred loading the home position."); }
                 e.printStackTrace();
             }
 
             loadReader.close();
-            System.out.println("Home of " + playerName + " successfully loaded.");
+            if (debug) { System.out.println("Home of " + playerName + " successfully loaded."); }
         } catch (FileNotFoundException e) {
-            System.out.println("An error occurred loading the file " + filename + ".");
+            if (debug) { System.out.println("An error occurred loading the file " + filename + "."); }
             e.printStackTrace();
         }
     }
