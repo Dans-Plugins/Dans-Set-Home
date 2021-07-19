@@ -104,7 +104,7 @@ public class CommandInterpreter {
                 }
 
                 System.out.println("Medieval Set Home is saving...");
-                MedievalSetHome.getInstance().saveHomeRecords();
+                StorageManager.getInstance().saveHomeRecords();
                 return true;
             }
 
@@ -117,7 +117,7 @@ public class CommandInterpreter {
 
                 System.out.println("Medieval Set Home is loading...");
                 MedievalSetHome.getInstance().saveHomeRecordFileNames();
-                MedievalSetHome.getInstance().saveHomeRecords();
+                StorageManager.getInstance().saveHomeRecords();
                 return true;
             }
         }
