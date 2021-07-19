@@ -28,7 +28,7 @@ public class CommandInterpreter {
         if (label.equalsIgnoreCase("sethome")) {
             if (sender instanceof Player) {
                 Player player = (Player) sender;
-                for (HomeRecord record : MedievalSetHome.getInstance().homeRecords) {
+                for (HomeRecord record : PersistentData.getInstance().getHomeRecords()) {
                     if (record.getPlayerName().equalsIgnoreCase(player.getName())) {
                         record.setHomeLocation(player.getLocation());
                         player.sendMessage(ChatColor.GREEN + "Home set!");
@@ -42,7 +42,7 @@ public class CommandInterpreter {
         if (label.equalsIgnoreCase("home")) {
             if (sender instanceof Player) {
                 Player player = (Player) sender;
-                for (HomeRecord record : MedievalSetHome.getInstance().homeRecords) {
+                for (HomeRecord record : PersistentData.getInstance().getHomeRecords()) {
                     if (record.getPlayerName().equalsIgnoreCase(player.getName())) {
                         if (record.getHomeLocation() != null) {
                             player.sendMessage(ChatColor.GREEN + "Teleporting in 3 seconds...");
