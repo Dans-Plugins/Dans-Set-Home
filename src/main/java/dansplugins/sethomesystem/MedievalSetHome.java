@@ -22,20 +22,15 @@ public class MedievalSetHome extends JavaPlugin implements Listener {
 
     ArrayList<HomeRecord> homeRecords = new ArrayList<>();
 
-    private MedievalSetHome() {
-
-    }
-
     public static MedievalSetHome getInstance() {
-        if (instance == null) {
-            instance = new MedievalSetHome();
-        }
         return instance;
     }
 
     @Override
     public void onEnable() {
         if (debug) { System.out.println("Medieval Set Home plugin enabling..."); }
+
+        instance = this;
 
         this.getServer().getPluginManager().registerEvents(this, this);
 
