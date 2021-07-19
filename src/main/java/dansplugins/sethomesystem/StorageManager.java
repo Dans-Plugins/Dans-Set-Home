@@ -10,6 +10,10 @@ public class StorageManager {
 
     private static StorageManager instance;
 
+    private StorageManager() {
+
+    }
+
     public static StorageManager getInstance() {
         if (instance == null) {
             instance = new StorageManager();
@@ -18,7 +22,7 @@ public class StorageManager {
     }
 
     public void saveHomeRecords() {
-        for (HomeRecord record : MedievalSetHome.getInstance().homeRecords) {
+        for (HomeRecord record : PersistentData.getInstance().getHomeRecords()) {
             record.save();
         }
     }
@@ -38,13 +42,13 @@ public class StorageManager {
 
                 // existence check
                 boolean exists = false;
-                for (int i = 0; i < MedievalSetHome.getInstance().homeRecords.size(); i++) {
-                    if (MedievalSetHome.getInstance().homeRecords.get(i).getPlayerName().equalsIgnoreCase(temp.getPlayerName())) {
-                        MedievalSetHome.getInstance().homeRecords.remove(i);
+                for (int i = 0; i < PersistentData.getInstance().getHomeRecords().size(); i++) {
+                    if (PersistentData.getInstance().getHomeRecords().get(i).getPlayerName().equalsIgnoreCase(temp.getPlayerName())) {
+                        PersistentData.getInstance().getHomeRecords().remove(i);
                     }
                 }
 
-                MedievalSetHome.getInstance().homeRecords.add(temp);
+                PersistentData.getInstance().getHomeRecords().add(temp);
 
             }
 

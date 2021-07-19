@@ -20,8 +20,6 @@ public class MedievalSetHome extends JavaPlugin implements Listener {
 
     private static MedievalSetHome instance;
 
-    ArrayList<HomeRecord> homeRecords = new ArrayList<>();
-
     public static MedievalSetHome getInstance() {
         return instance;
     }
@@ -65,7 +63,7 @@ public class MedievalSetHome extends JavaPlugin implements Listener {
             FileWriter saveWriter = new FileWriter(saveFile);
 
             // actual saving takes place here
-            for (HomeRecord record : homeRecords) {
+            for (HomeRecord record : PersistentData.getInstance().getHomeRecords()) {
                 saveWriter.write(record.getPlayerName() + ".txt" + "\n");
             }
 
@@ -86,12 +84,12 @@ public class MedievalSetHome extends JavaPlugin implements Listener {
             HomeRecord newRecord = new HomeRecord();
             newRecord.setPlayerName(event.getPlayer().getName());
 
-            homeRecords.add(newRecord);
+            PersistentData.getInstance().getHomeRecords().add(newRecord);
         }
     }
 
     public boolean hasHomeRecord(String playerName) {
-        for (HomeRecord record : homeRecords) {
+        for (HomeRecord record : PersistentData.getInstance().getHomeRecords()) {
             if (record.getPlayerName().equalsIgnoreCase(playerName)) {
                 return true;
             }
