@@ -116,7 +116,7 @@ public class CommandInterpreter {
                 }
 
                 System.out.println("Medieval Set Home is loading...");
-                MedievalSetHome.getInstance().saveHomeRecordFileNames();
+                StorageManager.getInstance().saveHomeRecordFileNames();
                 StorageManager.getInstance().saveHomeRecords();
                 return true;
             }

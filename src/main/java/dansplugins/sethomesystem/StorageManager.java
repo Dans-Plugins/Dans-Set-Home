@@ -2,6 +2,8 @@ package dansplugins.sethomesystem;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class StorageManager {
@@ -19,6 +21,33 @@ public class StorageManager {
             instance = new StorageManager();
         }
         return instance;
+    }
+
+    public void saveHomeRecordFileNames() {
+        try {
+            File saveFolder = new File("./plugins/Medieval-Set-Home/");
+            if (!saveFolder.exists()) {
+                saveFolder.mkdir();
+            }
+            File saveFile = new File("./plugins/Medieval-Set-Home/" + "home-record-filenames.txt");
+            if (saveFile.createNewFile()) {
+                if (debug) { System.out.println("Save file for home record filenames created."); }
+            } else {
+                if (debug) { System.out.println("Save file for home record filenames already exists. Overwriting."); }
+            }
+
+            FileWriter saveWriter = new FileWriter(saveFile);
+
+            // actual saving takes place here
+            for (HomeRecord record : PersistentData.getInstance().getHomeRecords()) {
+                saveWriter.write(record.getPlayerName() + ".txt" + "\n");
+            }
+
+            saveWriter.close();
+
+        } catch (IOException e) {
+            if (debug) { System.out.println("An error occurred while saving home record filenames."); }
+        }
     }
 
     public void saveHomeRecords() {
