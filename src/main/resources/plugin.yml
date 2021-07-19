@@ -1,7 +1,7 @@
 name: MedievalSetHome
-version: "0.6.1"
+version: 1.0
 author: KingdomProgrammers
-main: sethomesystem.Main
+main: dansplugins.sethomesystem.Main
 api-version: "1.13"
 
 commands:
