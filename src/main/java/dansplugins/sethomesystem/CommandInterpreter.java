@@ -60,6 +60,8 @@ public class CommandInterpreter {
                 ForceLoadCommand command = new ForceLoadCommand();
                 return command.execute(sender);
             }
+
+            sender.sendMessage(ChatColor.RED + "Medieval Set Home doesn't recognize that command.");
         }
 
         return false;
