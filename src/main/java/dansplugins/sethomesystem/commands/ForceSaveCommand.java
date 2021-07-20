@@ -16,7 +16,7 @@ public class ForceSaveCommand {
             }
         }
 
-        sender.sendMessage("Medieval Set Home is saving...");
+        sender.sendMessage(ChatColor.GREEN + "Medieval Set Home is saving...");
         StorageManager.getInstance().saveHomeRecords();
         return true;
     }

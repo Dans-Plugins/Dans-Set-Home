@@ -16,7 +16,7 @@ public class ForceLoadCommand {
             }
         }
 
-        sender.sendMessage("Medieval Set Home is loading...");
+        sender.sendMessage(ChatColor.GREEN + "Medieval Set Home is loading...");
         StorageManager.getInstance().saveHomeRecordFileNames();
         StorageManager.getInstance().saveHomeRecords();
         return true;
