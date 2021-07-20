@@ -1,5 +1,6 @@
 package dansplugins.sethomesystem;
 
+import dansplugins.sethomesystem.commands.ForceSaveCommand;
 import dansplugins.sethomesystem.commands.HelpCommand;
 import dansplugins.sethomesystem.commands.HomeCommand;
 import dansplugins.sethomesystem.commands.SetHomeCommand;
@@ -53,14 +54,8 @@ public class CommandInterpreter {
 
             // forcesave
             if (args[0].equalsIgnoreCase("forcesave")) {
-                if (sender instanceof Player) {
-                    sender.sendMessage(ChatColor.RED + "This command can only be used from the console.");
-                    return false;
-                }
-
-                System.out.println("Medieval Set Home is saving...");
-                StorageManager.getInstance().saveHomeRecords();
-                return true;
+                ForceSaveCommand command = new ForceSaveCommand();
+                return command.execute(sender);
             }
 
             // forceload
