@@ -8,3 +8,15 @@ commands:
   sethome:
   home:
   msh:
+
+permissions:
+  msg.sethome:
+    default: true
+  msg.home:
+    default: true
+  msg.help:
+    default: true
+  msg.forcesave:
+    default: op
+  msg.forceload:
+    default: op
