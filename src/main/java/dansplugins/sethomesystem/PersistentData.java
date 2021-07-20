@@ -23,4 +23,13 @@ public class PersistentData {
         return homeRecords;
     }
 
+    public boolean hasHomeRecord(String playerName) {
+        for (HomeRecord record : PersistentData.getInstance().getHomeRecords()) {
+            if (record.getPlayerName().equalsIgnoreCase(playerName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
