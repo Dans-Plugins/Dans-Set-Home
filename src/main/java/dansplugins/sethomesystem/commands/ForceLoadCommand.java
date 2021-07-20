@@ -9,8 +9,11 @@ public class ForceLoadCommand {
 
     public boolean execute(CommandSender sender) {
         if (sender instanceof Player) {
-            sender.sendMessage(ChatColor.RED + "This command can only be used from the console.");
-            return false;
+            Player player = (Player) sender;
+            if (!player.hasPermission("msh.forceload")) {
+                sender.sendMessage(ChatColor.RED + "You don't have permission to use this command.");
+                return false;
+            }
         }
 
         System.out.println("Medieval Set Home is loading...");

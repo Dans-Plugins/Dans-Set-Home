@@ -15,6 +15,12 @@ public class HomeCommand {
     public boolean execute(CommandSender sender) {
         if (sender instanceof Player) {
             Player player = (Player) sender;
+
+            if (!player.hasPermission("msh.home")) {
+                player.sendMessage(ChatColor.RED + "You don't have permission to use this command.");
+                return false;
+            }
+
             for (HomeRecord record : PersistentData.getInstance().getHomeRecords()) {
                 if (record.getPlayerName().equalsIgnoreCase(player.getName())) {
                     if (record.getHomeLocation() != null) {
