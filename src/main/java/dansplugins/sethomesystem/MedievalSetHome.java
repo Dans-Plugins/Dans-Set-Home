@@ -1,5 +1,6 @@
 package dansplugins.sethomesystem;
 
+import dansplugins.sethomesystem.bstats.Metrics;
 import dansplugins.sethomesystem.managers.StorageManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -23,6 +24,10 @@ public class MedievalSetHome extends JavaPlugin implements Listener {
 
         // load save files
         StorageManager.getInstance().loadHomeRecords();
+
+        // bStats
+        int pluginId = 12126;
+        Metrics metrics = new Metrics(this, pluginId);
     }
 
     @Override
