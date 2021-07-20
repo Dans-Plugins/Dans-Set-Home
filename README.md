@@ -12,3 +12,4 @@ A minecraft plugin that lets players set a home and teleport to their home.
 -  0.4 'Timers' update
 -  0.5 'Help' update
 -  0.6 'Manual Saving/Loading' update
+-  1.0 'Major Refactoring, Permissions, bStats' update
