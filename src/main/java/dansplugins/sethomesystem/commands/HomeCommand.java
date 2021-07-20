@@ -12,7 +12,7 @@ import static org.bukkit.Bukkit.getServer;
 
 public class HomeCommand {
 
-    public boolean teleportPlayerHome(CommandSender sender) {
+    public boolean execute(CommandSender sender) {
         if (sender instanceof Player) {
             Player player = (Player) sender;
             for (HomeRecord record : PersistentData.getInstance().getHomeRecords()) {

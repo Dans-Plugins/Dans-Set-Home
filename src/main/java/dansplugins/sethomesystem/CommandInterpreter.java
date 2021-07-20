@@ -2,15 +2,10 @@ package dansplugins.sethomesystem;
 
 import dansplugins.sethomesystem.commands.HomeCommand;
 import dansplugins.sethomesystem.commands.SetHomeCommand;
-import dansplugins.sethomesystem.data.PersistentData;
 import dansplugins.sethomesystem.managers.StorageManager;
-import dansplugins.sethomesystem.objects.HomeRecord;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import static org.bukkit.Bukkit.getServer;
 
 public class CommandInterpreter {
 
@@ -32,13 +27,13 @@ public class CommandInterpreter {
         // sethome command
         if (label.equalsIgnoreCase("sethome")) {
             SetHomeCommand command = new SetHomeCommand();
-            return command.setHome(sender);
+            return command.execute(sender);
         }
 
         // home command
         if (label.equalsIgnoreCase("home")) {
             HomeCommand command = new HomeCommand();
-            return command.teleportPlayerHome(sender);
+            return command.execute(sender);
         }
 
         // msh command

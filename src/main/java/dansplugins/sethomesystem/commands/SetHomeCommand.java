@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 
 public class SetHomeCommand {
 
-    public boolean setHome(CommandSender sender) {
+    public boolean execute(CommandSender sender) {
         if (sender instanceof Player) {
             Player player = (Player) sender;
             for (HomeRecord record : PersistentData.getInstance().getHomeRecords()) {
