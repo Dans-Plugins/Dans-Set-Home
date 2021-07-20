@@ -1,9 +1,6 @@
 package dansplugins.sethomesystem;
 
-import dansplugins.sethomesystem.commands.ForceSaveCommand;
-import dansplugins.sethomesystem.commands.HelpCommand;
-import dansplugins.sethomesystem.commands.HomeCommand;
-import dansplugins.sethomesystem.commands.SetHomeCommand;
+import dansplugins.sethomesystem.commands.*;
 import dansplugins.sethomesystem.managers.StorageManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -60,15 +57,8 @@ public class CommandInterpreter {
 
             // forceload
             if (args[0].equalsIgnoreCase("forceload")) {
-                if (!(sender instanceof Player)) {
-                    sender.sendMessage(ChatColor.RED + "This command can only be used from the console.");
-                    return false;
-                }
-
-                System.out.println("Medieval Set Home is loading...");
-                StorageManager.getInstance().saveHomeRecordFileNames();
-                StorageManager.getInstance().saveHomeRecords();
-                return true;
+                ForceLoadCommand command = new ForceLoadCommand();
+                return command.execute(sender);
             }
         }
 
