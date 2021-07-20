@@ -1,5 +1,6 @@
 package dansplugins.sethomesystem;
 
+import dansplugins.sethomesystem.commands.HelpCommand;
 import dansplugins.sethomesystem.commands.HomeCommand;
 import dansplugins.sethomesystem.commands.SetHomeCommand;
 import dansplugins.sethomesystem.managers.StorageManager;
@@ -46,12 +47,8 @@ public class CommandInterpreter {
 
             // help command
             if (args[0].equalsIgnoreCase("help")) {
-                sender.sendMessage(ChatColor.AQUA + "/help - View a list of helpful commands.");
-                sender.sendMessage(ChatColor.AQUA + "/sethome - Set your home location.");
-                sender.sendMessage(ChatColor.AQUA + "/home - Teleport to your home location.");
-                sender.sendMessage(ChatColor.AQUA + "/forcesave - Force a save from the console.");
-                sender.sendMessage(ChatColor.AQUA + "/forceload - Force a load from the console.");
-                return true;
+                HelpCommand command = new HelpCommand();
+                return command.execute(sender);
             }
 
             // forcesave
