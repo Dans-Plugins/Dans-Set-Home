@@ -10,13 +10,13 @@ commands:
   msh:
 
 permissions:
-  msg.sethome:
+  msh.sethome:
     default: true
-  msg.home:
+  msh.home:
     default: true
-  msg.help:
+  msh.help:
     default: true
-  msg.forcesave:
+  msh.forcesave:
     default: op
-  msg.forceload:
+  msh.forceload:
     default: op
