@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
 public class ForceSaveCommand {
 
     public boolean execute(CommandSender sender) {
-
         if (sender instanceof Player) {
             sender.sendMessage(ChatColor.RED + "This command can only be used from the console.");
             return false;
@@ -17,7 +16,6 @@ public class ForceSaveCommand {
         System.out.println("Medieval Set Home is saving...");
         StorageManager.getInstance().saveHomeRecords();
         return true;
-
     }
 
 }
