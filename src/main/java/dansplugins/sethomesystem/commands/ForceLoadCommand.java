@@ -16,7 +16,7 @@ public class ForceLoadCommand {
             }
         }
 
-        System.out.println("Medieval Set Home is loading...");
+        sender.sendMessage("Medieval Set Home is loading...");
         StorageManager.getInstance().saveHomeRecordFileNames();
         StorageManager.getInstance().saveHomeRecords();
         return true;
