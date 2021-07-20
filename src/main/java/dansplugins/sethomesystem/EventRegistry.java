@@ -1,5 +1,6 @@
 package dansplugins.sethomesystem;
 
+import dansplugins.sethomesystem.eventhandlers.PlayerJoinEventHandler;
 import org.bukkit.plugin.PluginManager;
 
 public class EventRegistry {

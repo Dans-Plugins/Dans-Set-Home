@@ -1,4 +1,6 @@
-package dansplugins.sethomesystem;
+package dansplugins.sethomesystem.data;
+
+import dansplugins.sethomesystem.objects.HomeRecord;
 
 import java.util.ArrayList;
 

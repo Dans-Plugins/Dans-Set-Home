@@ -1,5 +1,7 @@
-package dansplugins.sethomesystem;
+package dansplugins.sethomesystem.eventhandlers;
 
+import dansplugins.sethomesystem.objects.HomeRecord;
+import dansplugins.sethomesystem.data.PersistentData;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;

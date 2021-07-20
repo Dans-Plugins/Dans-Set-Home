@@ -1,4 +1,7 @@
-package dansplugins.sethomesystem;
+package dansplugins.sethomesystem.managers;
+
+import dansplugins.sethomesystem.objects.HomeRecord;
+import dansplugins.sethomesystem.data.PersistentData;
 
 import java.io.File;
 import java.io.FileNotFoundException;

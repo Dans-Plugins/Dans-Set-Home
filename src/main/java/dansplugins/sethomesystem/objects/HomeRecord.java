@@ -1,4 +1,4 @@
-package dansplugins.sethomesystem;
+package dansplugins.sethomesystem.objects;
 
 import org.bukkit.Location;
 import org.bukkit.World;
