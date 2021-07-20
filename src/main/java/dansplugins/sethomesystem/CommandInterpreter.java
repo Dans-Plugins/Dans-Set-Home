@@ -1,5 +1,6 @@
 package dansplugins.sethomesystem;
 
+import dansplugins.sethomesystem.commands.SetHomeCommand;
 import dansplugins.sethomesystem.data.PersistentData;
 import dansplugins.sethomesystem.managers.StorageManager;
 import dansplugins.sethomesystem.objects.HomeRecord;
@@ -29,16 +30,8 @@ public class CommandInterpreter {
 
         // sethome command
         if (label.equalsIgnoreCase("sethome")) {
-            if (sender instanceof Player) {
-                Player player = (Player) sender;
-                for (HomeRecord record : PersistentData.getInstance().getHomeRecords()) {
-                    if (record.getPlayerName().equalsIgnoreCase(player.getName())) {
-                        record.setHomeLocation(player.getLocation());
-                        player.sendMessage(ChatColor.GREEN + "Home set!");
-                        return true;
-                    }
-                }
-            }
+            SetHomeCommand command = new SetHomeCommand();
+            return command.setHome(sender);
         }
 
         // home command
