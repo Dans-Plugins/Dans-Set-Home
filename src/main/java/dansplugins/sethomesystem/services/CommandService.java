@@ -1,37 +1,33 @@
-package dansplugins.sethomesystem;
+package dansplugins.sethomesystem.services;
 
+import dansplugins.sethomesystem.MedievalSetHome;
 import dansplugins.sethomesystem.commands.*;
-import dansplugins.sethomesystem.managers.StorageManager;
+import dansplugins.sethomesystem.data.PersistentData;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
-public class CommandInterpreter {
+public class CommandService {
+    private final PersistentData persistentData;
+    private final MedievalSetHome medievalSetHome;
+    private final StorageService storageService;
 
-    private static CommandInterpreter instance;
-
-    private CommandInterpreter() {
-
-    }
-
-    public static CommandInterpreter getInstance() {
-        if (instance == null) {
-            instance = new CommandInterpreter();
-        }
-        return instance;
+    public CommandService(PersistentData persistentData, MedievalSetHome medievalSetHome, StorageService storageService) {
+        this.persistentData = persistentData;
+        this.medievalSetHome = medievalSetHome;
+        this.storageService = storageService;
     }
 
     public boolean interpretCommand(CommandSender sender, String label, String[] args) {
 
         // sethome command
         if (label.equalsIgnoreCase("sethome")) {
-            SetHomeCommand command = new SetHomeCommand();
+            SetHomeCommand command = new SetHomeCommand(persistentData);
             return command.execute(sender);
         }
 
         // home command
         if (label.equalsIgnoreCase("home")) {
-            HomeCommand command = new HomeCommand();
+            HomeCommand command = new HomeCommand(persistentData, medievalSetHome);
             return command.execute(sender);
         }
 
@@ -51,13 +47,13 @@ public class CommandInterpreter {
 
             // forcesave
             if (args[0].equalsIgnoreCase("forcesave")) {
-                ForceSaveCommand command = new ForceSaveCommand();
+                ForceSaveCommand command = new ForceSaveCommand(storageService);
                 return command.execute(sender);
             }
 
             // forceload
             if (args[0].equalsIgnoreCase("forceload")) {
-                ForceLoadCommand command = new ForceLoadCommand();
+                ForceLoadCommand command = new ForceLoadCommand(storageService);
                 return command.execute(sender);
             }
 

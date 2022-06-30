@@ -1,11 +1,16 @@
 package dansplugins.sethomesystem.commands;
 
-import dansplugins.sethomesystem.managers.StorageManager;
+import dansplugins.sethomesystem.services.StorageService;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class ForceLoadCommand {
+    private final StorageService storageService;
+
+    public ForceLoadCommand(StorageService storageService) {
+        this.storageService = storageService;
+    }
 
     public boolean execute(CommandSender sender) {
         if (sender instanceof Player) {
@@ -17,8 +22,8 @@ public class ForceLoadCommand {
         }
 
         sender.sendMessage(ChatColor.GREEN + "Medieval Set Home is loading...");
-        StorageManager.getInstance().saveHomeRecordFileNames();
-        StorageManager.getInstance().saveHomeRecords();
+        storageService.saveHomeRecordFileNames();
+        storageService.saveHomeRecords();
         return true;
     }
 

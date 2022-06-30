@@ -1,11 +1,16 @@
 package dansplugins.sethomesystem.commands;
 
-import dansplugins.sethomesystem.managers.StorageManager;
+import dansplugins.sethomesystem.services.StorageService;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class ForceSaveCommand {
+    private final StorageService storageService;
+
+    public ForceSaveCommand(StorageService storageService) {
+        this.storageService = storageService;
+    }
 
     public boolean execute(CommandSender sender) {
         if (sender instanceof Player) {
@@ -17,7 +22,7 @@ public class ForceSaveCommand {
         }
 
         sender.sendMessage(ChatColor.GREEN + "Medieval Set Home is saving...");
-        StorageManager.getInstance().saveHomeRecords();
+        storageService.saveHomeRecords();
         return true;
     }
 
