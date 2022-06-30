@@ -1,4 +1,4 @@
-package dansplugins.sethomesystem.managers;
+package dansplugins.sethomesystem.services;
 
 import dansplugins.sethomesystem.objects.HomeRecord;
 import dansplugins.sethomesystem.data.PersistentData;
@@ -9,21 +9,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
-public class StorageManager {
+public class StorageService {
+    private final PersistentData persistentData;
 
-    private boolean debug = false;
+    private final boolean debug = false;
 
-    private static StorageManager instance;
-
-    private StorageManager() {
-
-    }
-
-    public static StorageManager getInstance() {
-        if (instance == null) {
-            instance = new StorageManager();
-        }
-        return instance;
+    public StorageService(PersistentData persistentData) {
+        this.persistentData = persistentData;
     }
 
     public void saveHomeRecordFileNames() {
@@ -42,7 +34,7 @@ public class StorageManager {
             FileWriter saveWriter = new FileWriter(saveFile);
 
             // actual saving takes place here
-            for (HomeRecord record : PersistentData.getInstance().getHomeRecords()) {
+            for (HomeRecord record : persistentData.getHomeRecords()) {
                 saveWriter.write(record.getPlayerName() + ".txt" + "\n");
             }
 
@@ -54,7 +46,7 @@ public class StorageManager {
     }
 
     public void saveHomeRecords() {
-        for (HomeRecord record : PersistentData.getInstance().getHomeRecords()) {
+        for (HomeRecord record : persistentData.getHomeRecords()) {
             record.save();
         }
     }
@@ -74,13 +66,13 @@ public class StorageManager {
 
                 // existence check
                 boolean exists = false;
-                for (int i = 0; i < PersistentData.getInstance().getHomeRecords().size(); i++) {
-                    if (PersistentData.getInstance().getHomeRecords().get(i).getPlayerName().equalsIgnoreCase(temp.getPlayerName())) {
-                        PersistentData.getInstance().getHomeRecords().remove(i);
+                for (int i = 0; i < persistentData.getHomeRecords().size(); i++) {
+                    if (persistentData.getHomeRecords().get(i).getPlayerName().equalsIgnoreCase(temp.getPlayerName())) {
+                        persistentData.getHomeRecords().remove(i);
                     }
                 }
 
-                PersistentData.getInstance().getHomeRecords().add(temp);
+                persistentData.getHomeRecords().add(temp);
 
             }
 

@@ -1,4 +1,4 @@
-package dansplugins.sethomesystem.eventhandlers;
+package dansplugins.sethomesystem.listeners;
 
 import dansplugins.sethomesystem.objects.HomeRecord;
 import dansplugins.sethomesystem.data.PersistentData;
@@ -6,15 +6,20 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-public class PlayerJoinEventHandler implements Listener {
+public class PlayerJoinEventListener implements Listener {
+    private final PersistentData persistentData;
+
+    public PlayerJoinEventListener(PersistentData persistentData) {
+        this.persistentData = persistentData;
+    }
 
     @EventHandler()
     public void handle(PlayerJoinEvent event) {
-        if (!PersistentData.getInstance().hasHomeRecord(event.getPlayer().getName())) {
+        if (!persistentData.hasHomeRecord(event.getPlayer().getName())) {
             HomeRecord newRecord = new HomeRecord();
             newRecord.setPlayerName(event.getPlayer().getName());
 
-            PersistentData.getInstance().getHomeRecords().add(newRecord);
+            persistentData.getHomeRecords().add(newRecord);
         }
     }
 

@@ -7,6 +7,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class SetHomeCommand {
+    private final PersistentData persistentData;
+
+    public SetHomeCommand(PersistentData persistentData) {
+        this.persistentData = persistentData;
+    }
 
     public boolean execute(CommandSender sender) {
         if (sender instanceof Player) {
@@ -17,7 +22,7 @@ public class SetHomeCommand {
                 return false;
             }
 
-            for (HomeRecord record : PersistentData.getInstance().getHomeRecords()) {
+            for (HomeRecord record : persistentData.getHomeRecords()) {
                 if (record.getPlayerName().equalsIgnoreCase(player.getName())) {
                     record.setHomeLocation(player.getLocation());
                     player.sendMessage(ChatColor.GREEN + "Home set!");

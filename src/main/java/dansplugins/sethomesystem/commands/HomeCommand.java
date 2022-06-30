@@ -11,6 +11,13 @@ import org.bukkit.entity.Player;
 import static org.bukkit.Bukkit.getServer;
 
 public class HomeCommand {
+    private final PersistentData persistentData;
+    private final MedievalSetHome medievalSetHome;
+
+    public HomeCommand(PersistentData persistentData, MedievalSetHome medievalSetHome) {
+        this.persistentData = persistentData;
+        this.medievalSetHome = medievalSetHome;
+    }
 
     public boolean execute(CommandSender sender) {
         if (sender instanceof Player) {
@@ -21,7 +28,7 @@ public class HomeCommand {
                 return false;
             }
 
-            for (HomeRecord record : PersistentData.getInstance().getHomeRecords()) {
+            for (HomeRecord record : persistentData.getHomeRecords()) {
                 if (record.getPlayerName().equalsIgnoreCase(player.getName())) {
                     if (record.getHomeLocation() != null) {
                         player.sendMessage(ChatColor.GREEN + "Teleporting in 3 seconds...");
@@ -29,7 +36,7 @@ public class HomeCommand {
 
                         Location initialLocation = player.getLocation();
 
-                        getServer().getScheduler().runTaskLater(MedievalSetHome.getInstance(), new Runnable() {
+                        getServer().getScheduler().runTaskLater(medievalSetHome, new Runnable() {
                             @Override
                             public void run() {
                                 if (initialLocation.getX() == player.getLocation().getX() &&

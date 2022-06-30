@@ -13,8 +13,7 @@ import java.util.Scanner;
 import static org.bukkit.Bukkit.getServer;
 
 public class HomeRecord {
-
-    private boolean debug = false;
+    private final boolean debug = false;
 
     private String playerName = "";
     private Location homeLocation = null;

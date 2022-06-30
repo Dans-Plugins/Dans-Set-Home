@@ -1,29 +1,29 @@
 package dansplugins.sethomesystem;
 
 import dansplugins.sethomesystem.bstats.Metrics;
-import dansplugins.sethomesystem.managers.StorageManager;
+import dansplugins.sethomesystem.data.PersistentData;
+import dansplugins.sethomesystem.services.CommandService;
+import dansplugins.sethomesystem.services.StorageService;
+import dansplugins.sethomesystem.utils.EventRegistry;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class MedievalSetHome extends JavaPlugin implements Listener {
-
-    private static MedievalSetHome instance;
-
-    public static MedievalSetHome getInstance() {
-        return instance;
-    }
+    private final PersistentData persistentData = new PersistentData();
+    private final EventRegistry eventRegistry = new EventRegistry(this, persistentData);
+    private final StorageService storageService = new StorageService(persistentData);
+    private final CommandService commandService = new CommandService(persistentData, this, storageService);
 
     @Override
     public void onEnable() {
-        instance = this;
 
         // register events
-        EventRegistry.getInstance().registerEvents();
+        eventRegistry.registerEvents();
 
         // load save files
-        StorageManager.getInstance().loadHomeRecords();
+        storageService.loadHomeRecords();
 
         // bStats
         int pluginId = 12126;
@@ -32,12 +32,12 @@ public class MedievalSetHome extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
-        StorageManager.getInstance().saveHomeRecordFileNames();
-        StorageManager.getInstance().saveHomeRecords();
+        storageService.saveHomeRecordFileNames();
+        storageService.saveHomeRecords();
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        return CommandInterpreter.getInstance().interpretCommand(sender, label, args);
+        return commandService.interpretCommand(sender, label, args);
     }
 
 }
