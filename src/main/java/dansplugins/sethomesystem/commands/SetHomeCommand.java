@@ -17,7 +17,7 @@ public class SetHomeCommand {
         if (sender instanceof Player) {
             Player player = (Player) sender;
 
-            if (!player.hasPermission("msh.sethome")) {
+            if (!player.hasPermission("dsh.sethome")) {
                 player.sendMessage(ChatColor.RED + "You don't have permission to use this command.");
                 return false;
             }

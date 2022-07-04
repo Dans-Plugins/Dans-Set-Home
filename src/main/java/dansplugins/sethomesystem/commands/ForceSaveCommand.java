@@ -15,7 +15,7 @@ public class ForceSaveCommand {
     public boolean execute(CommandSender sender) {
         if (sender instanceof Player) {
             Player player = (Player) sender;
-            if (!player.hasPermission("msh.forcesave")) {
+            if (!player.hasPermission("dsh.forcesave")) {
                 sender.sendMessage(ChatColor.RED + "You don't have permission to use this command.");
                 return false;
             }

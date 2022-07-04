@@ -31,11 +31,11 @@ public class CommandService {
             return command.execute(sender);
         }
 
-        // msh command
-        if (label.equalsIgnoreCase("msh")) {
+        // dsh command
+        if (label.equalsIgnoreCase("dsh")) {
             // args check
             if (args.length == 0) {
-                sender.sendMessage(ChatColor.RED + "Try /msh help");
+                sender.sendMessage(ChatColor.RED + "Try /dsh help");
                 return false;
             }
 

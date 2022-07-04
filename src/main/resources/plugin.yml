@@ -1,5 +1,5 @@
 name: MedievalSetHome
-version: 1.0
+version: '${project.version}'
 author: DanTheTechMan
 main: dansplugins.sethomesystem.MedievalSetHome
 api-version: "1.13"
@@ -7,16 +7,16 @@ api-version: "1.13"
 commands:
   sethome:
   home:
-  msh:
+  dsh:
 
 permissions:
-  msh.sethome:
+  dsh.sethome:
     default: true
-  msh.home:
+  dsh.home:
     default: true
-  msh.help:
+  dsh.help:
     default: true
-  msh.forcesave:
+  dsh.forcesave:
     default: op
-  msh.forceload:
+  dsh.forceload:
     default: op
