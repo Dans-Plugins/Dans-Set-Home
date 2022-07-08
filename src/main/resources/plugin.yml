@@ -1,4 +1,4 @@
-name: MedievalSetHome
+name: DansSetHome
 version: '${project.version}'
 author: DanTheTechMan
 main: dansplugins.sethomesystem.MedievalSetHome
@@ -10,12 +10,14 @@ commands:
   dsh:
 
 permissions:
-  dsh.sethome:
+  dsh.help:
     default: true
   dsh.home:
     default: true
-  dsh.help:
+  dsh.sethome:
     default: true
+  dsh.home.others:
+    default: op
   dsh.forcesave:
     default: op
   dsh.forceload:

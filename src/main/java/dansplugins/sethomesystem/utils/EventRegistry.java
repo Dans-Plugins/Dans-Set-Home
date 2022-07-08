@@ -2,7 +2,7 @@ package dansplugins.sethomesystem.utils;
 
 import dansplugins.sethomesystem.MedievalSetHome;
 import dansplugins.sethomesystem.data.PersistentData;
-import dansplugins.sethomesystem.listeners.PlayerJoinEventListener;
+import dansplugins.sethomesystem.listeners.JoinListener;
 import org.bukkit.plugin.PluginManager;
 
 public class EventRegistry {
@@ -20,6 +20,6 @@ public class EventRegistry {
         PluginManager manager = mainInstance.getServer().getPluginManager();
 
         // join event handler
-        manager.registerEvents(new PlayerJoinEventListener(persistentData), mainInstance);
+        manager.registerEvents(new JoinListener(persistentData), mainInstance);
     }
 }
