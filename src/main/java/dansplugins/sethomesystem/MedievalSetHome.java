@@ -39,5 +39,4 @@ public class MedievalSetHome extends JavaPlugin implements Listener {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         return commandService.interpretCommand(sender, label, args);
     }
-
 }

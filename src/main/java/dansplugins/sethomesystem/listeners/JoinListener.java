@@ -6,10 +6,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-public class PlayerJoinEventListener implements Listener {
+public class JoinListener implements Listener {
     private final PersistentData persistentData;
 
-    public PlayerJoinEventListener(PersistentData persistentData) {
+    public JoinListener(PersistentData persistentData) {
         this.persistentData = persistentData;
     }
 
@@ -19,7 +19,7 @@ public class PlayerJoinEventListener implements Listener {
             HomeRecord newRecord = new HomeRecord();
             newRecord.setPlayerName(event.getPlayer().getName());
 
-            persistentData.getHomeRecords().add(newRecord);
+            persistentData.addHomeRecord(newRecord);
         }
     }
 

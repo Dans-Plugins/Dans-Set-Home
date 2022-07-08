@@ -28,7 +28,7 @@ public class CommandService {
         // home command
         if (label.equalsIgnoreCase("home")) {
             HomeCommand command = new HomeCommand(persistentData, medievalSetHome);
-            return command.execute(sender);
+            return command.execute(sender, args);
         }
 
         // dsh command
