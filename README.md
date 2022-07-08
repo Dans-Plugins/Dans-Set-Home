@@ -1,2 +1,2 @@
-# What is this?
-A minecraft plugin that lets players set a home and teleport to their home.
+# Dan's Set Home
+This Minecraft plugin allows players to set and teleport to home locations. 
