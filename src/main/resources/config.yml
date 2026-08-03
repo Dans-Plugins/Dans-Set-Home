@@ -1,0 +1,2 @@
+# Number of seconds a player must stand still before /home teleports them.
+teleport-delay-seconds: 3

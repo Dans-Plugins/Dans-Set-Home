@@ -2,6 +2,7 @@ package dansplugins.sethomesystem.services;
 
 import dansplugins.sethomesystem.MedievalSetHome;
 import dansplugins.sethomesystem.commands.*;
+import dansplugins.sethomesystem.config.ConfigManager;
 import dansplugins.sethomesystem.data.PersistentData;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -10,11 +11,13 @@ public class CommandService {
     private final PersistentData persistentData;
     private final MedievalSetHome medievalSetHome;
     private final StorageService storageService;
+    private final ConfigManager configManager;
 
-    public CommandService(PersistentData persistentData, MedievalSetHome medievalSetHome, StorageService storageService) {
+    public CommandService(PersistentData persistentData, MedievalSetHome medievalSetHome, StorageService storageService, ConfigManager configManager) {
         this.persistentData = persistentData;
         this.medievalSetHome = medievalSetHome;
         this.storageService = storageService;
+        this.configManager = configManager;
     }
 
     public boolean interpretCommand(CommandSender sender, String label, String[] args) {
@@ -27,7 +30,7 @@ public class CommandService {
 
         // home command
         if (label.equalsIgnoreCase("home")) {
-            HomeCommand command = new HomeCommand(persistentData, medievalSetHome);
+            HomeCommand command = new HomeCommand(persistentData, medievalSetHome, configManager);
             return command.execute(sender, args);
         }
 
