@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+- `config.yml` with a `teleport-delay-seconds` option controlling how long `/home` waits before teleporting
+
 ## [1.2.0]
 
 ### Added

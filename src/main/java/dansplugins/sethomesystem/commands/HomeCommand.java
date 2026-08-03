@@ -1,6 +1,7 @@
 package dansplugins.sethomesystem.commands;
 
 import dansplugins.sethomesystem.MedievalSetHome;
+import dansplugins.sethomesystem.config.ConfigManager;
 import dansplugins.sethomesystem.exceptions.HomeRecordNotFoundException;
 import dansplugins.sethomesystem.data.PersistentData;
 import dansplugins.sethomesystem.objects.HomeRecord;
@@ -15,10 +16,12 @@ import static org.bukkit.ChatColor.RED;
 public class HomeCommand {
     private final PersistentData persistentData;
     private final MedievalSetHome medievalSetHome;
+    private final ConfigManager configManager;
 
-    public HomeCommand(PersistentData persistentData, MedievalSetHome medievalSetHome) {
+    public HomeCommand(PersistentData persistentData, MedievalSetHome medievalSetHome, ConfigManager configManager) {
         this.persistentData = persistentData;
         this.medievalSetHome = medievalSetHome;
+        this.configManager = configManager;
     }
 
     public boolean execute(CommandSender sender, String[] args) {
@@ -64,7 +67,7 @@ public class HomeCommand {
             return false;
         }
 
-        int seconds = 3;
+        int seconds = configManager.getTeleportDelaySeconds();
         player.sendMessage(ChatColor.GREEN + "Teleporting in " + seconds + " seconds...");
 
         Location initialLocation = player.getLocation();

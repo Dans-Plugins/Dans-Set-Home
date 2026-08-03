@@ -1,6 +1,7 @@
 package dansplugins.sethomesystem;
 
 import dansplugins.sethomesystem.bstats.Metrics;
+import dansplugins.sethomesystem.config.ConfigManager;
 import dansplugins.sethomesystem.data.PersistentData;
 import dansplugins.sethomesystem.services.CommandService;
 import dansplugins.sethomesystem.services.StorageService;
@@ -14,10 +15,14 @@ public class MedievalSetHome extends JavaPlugin implements Listener {
     private final PersistentData persistentData = new PersistentData();
     private final EventRegistry eventRegistry = new EventRegistry(this, persistentData);
     private final StorageService storageService = new StorageService(persistentData);
-    private final CommandService commandService = new CommandService(persistentData, this, storageService);
+    private final ConfigManager configManager = new ConfigManager(this);
+    private final CommandService commandService = new CommandService(persistentData, this, storageService, configManager);
 
     @Override
     public void onEnable() {
+
+        // load config
+        configManager.saveDefaultConfig();
 
         // register events
         eventRegistry.registerEvents();
