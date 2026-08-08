@@ -6,7 +6,7 @@
 
     <groupId>DansPlugins</groupId>
     <artifactId>Dans-Set-Home</artifactId>
-    <version>1.2.0</version>
+    <version>2.0.0-SNAPSHOT-8-8-2026</version>
     <packaging>jar</packaging>
 
     <name>MedievalSetHome</name>
