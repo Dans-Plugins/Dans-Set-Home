@@ -9,6 +9,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 - `config.yml` with a `teleport-delay-seconds` option controlling how long `/home` waits before teleporting
 
+### Fixed
+- `/dsh forceload` now reloads player data from disk instead of overwriting it with the in-memory records
+- `/dsh forcesave` now writes the home record filename index as well as the individual records, so homes created since the last shutdown survive a restart
+
 ## [1.2.0]
 
 ### Added
