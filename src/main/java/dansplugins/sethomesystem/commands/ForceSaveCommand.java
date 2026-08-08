@@ -22,6 +22,7 @@ public class ForceSaveCommand {
         }
 
         sender.sendMessage(ChatColor.GREEN + "Medieval Set Home is saving...");
+        storageService.saveHomeRecordFileNames();
         storageService.saveHomeRecords();
         return true;
     }
