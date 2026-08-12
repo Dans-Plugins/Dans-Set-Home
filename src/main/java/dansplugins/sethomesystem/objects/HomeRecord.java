@@ -72,8 +72,12 @@ public class HomeRecord {
     }
 
     public void load(String filename) {
+        load(new File("./plugins/Medieval-Set-Home/" + filename));
+    }
+
+    void load(File loadFile) {
+        String filename = loadFile.getName();
         try {
-            File loadFile = new File("./plugins/Medieval-Set-Home/" + filename);
             Scanner loadReader = new Scanner(loadFile);
 
             // actual loading
@@ -82,9 +86,9 @@ public class HomeRecord {
             }
 
             World world = null;
-            double x = 0;
-            double y = 0;
-            double z = 0;
+            Double x = null;
+            Double y = null;
+            Double z = null;
 
             try {
                 if (debug) { System.out.println("Attempting to load home location for " + playerName + "..."); }
@@ -115,8 +119,9 @@ public class HomeRecord {
                     if (debug) { System.out.println("Z position not found in file!"); }
                 }
 
-                // set location
-                if (world != null && x != 0 && y != 0 && z != 0) {
+                // set location - each coordinate is tracked by whether it was read at all, so that
+                // a legitimately saved 0 is not mistaken for a missing value
+                if (world != null && x != null && y != null && z != null) {
                     homeLocation = new Location(world, x, y, z);
                     if (debug) { System.out.println("Home of " + playerName + " successfully set to " + x + ", " + y + ", " + z + "."); }
                 }

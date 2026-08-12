@@ -10,6 +10,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - A `Dev Release` workflow, which republishes a rolling `dev` prerelease of `main` on every non-documentation push. This is what Dan's Plugin Manager's experimental channel installs from: `/dpm get danssethome --experimental` reads `releases/tags/dev`, so without it there is nothing for that command to download. The prerelease is unreleased, unreviewed code and is marked as such.
 
+### Fixed
+
+- `/sethome` now works for players who were already online when the plugin was enabled. A home record is created on demand when one is missing, instead of the command failing without any message
+- Home locations with a coordinate of exactly `0` are no longer discarded when loaded from disk. A home set on the `x = 0` or `z = 0` axis survives a restart instead of coming back as `Home location was null`
+
 ## [2.0.0-SNAPSHOT-8-8-2026] – 2026-08-08
 
 ### Changed
