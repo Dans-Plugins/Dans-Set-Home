@@ -21,7 +21,7 @@ public class ForceLoadCommand {
             }
         }
 
-        sender.sendMessage(ChatColor.GREEN + "Medieval Set Home is loading...");
+        sender.sendMessage(ChatColor.GREEN + "Dans Set Home is loading...");
         storageService.loadHomeRecords();
         return true;
     }

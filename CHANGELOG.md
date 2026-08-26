@@ -6,8 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- Player-facing messages no longer use the plugin's former name. The unrecognised `/dsh` subcommand reply, and the `/dsh forcesave` and `/dsh forceload` confirmations, now say `Dans Set Home`. The unrecognised-subcommand reply also points at `/dsh help`, matching what `/dsh` with no arguments already did
+- `USER_GUIDE.md` now tells players that `/home` waits out a short delay before teleporting and that moving during it cancels the teleport
+
 ### Fixed
 
+- `/sethome` now explains itself when run from the console instead of returning silently, matching `/home`
 - The `Dev Release` workflow now retries publishing the `dev` prerelease before giving up. The release and its tag have to be deleted and recreated for the tag to move to the new commit, and a transient API failure inside that window previously left the repository with no `dev` release at all until the workflow was re-run by hand. Each attempt now starts from a clean slate, and an exhausted retry fails loudly.
 
 ### Added
