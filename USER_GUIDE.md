@@ -16,6 +16,12 @@ Dans Set Home is a simple Spigot plugin that lets players set a home location an
 2. Run `/sethome` to save the location.
 3. Run `/home` at any time to teleport back.
 
+`/home` does not teleport you straight away. A short delay runs first — 3 seconds by
+default — and you have to stand still for it. If your position changes before the delay
+is up, the teleport is cancelled and you are told why. Server administrators can change
+the length of the delay with the `teleport-delay-seconds` option described in
+[CONFIG.md](CONFIG.md).
+
 ## Permissions
 
 | Permission | Default | Description |

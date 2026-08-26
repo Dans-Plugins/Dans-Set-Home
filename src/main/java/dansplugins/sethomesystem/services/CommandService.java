@@ -60,7 +60,7 @@ public class CommandService {
                 return command.execute(sender);
             }
 
-            sender.sendMessage(ChatColor.RED + "Medieval Set Home doesn't recognize that command.");
+            sender.sendMessage(ChatColor.RED + "Dans Set Home doesn't recognize that command. Try /dsh help");
         }
 
         return false;

@@ -33,12 +33,13 @@ class SetHomeCommandTest {
     }
 
     @Test
-    void execute_nonPlayerSender_returnsFalse() {
+    void execute_nonPlayerSender_sendsMessageAndReturnsFalse() {
         CommandSender sender = mock(CommandSender.class);
 
         boolean result = setHomeCommand.execute(sender);
 
         assertFalse(result);
+        verify(sender).sendMessage("Only players can use this command.");
         assertTrue(persistentData.getHomeRecords().isEmpty());
     }
 

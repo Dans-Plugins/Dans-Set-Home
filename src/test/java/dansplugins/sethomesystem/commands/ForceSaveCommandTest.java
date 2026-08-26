@@ -47,7 +47,7 @@ class ForceSaveCommandTest {
         boolean result = forceSaveCommand.execute(player);
 
         assertTrue(result);
-        verify(player).sendMessage(ChatColor.GREEN + "Medieval Set Home is saving...");
+        verify(player).sendMessage(ChatColor.GREEN + "Dans Set Home is saving...");
         verify(storageService).saveHomeRecordFileNames();
         verify(storageService).saveHomeRecords();
     }

@@ -45,7 +45,7 @@ class ForceLoadCommandTest {
         boolean result = forceLoadCommand.execute(player);
 
         assertTrue(result);
-        verify(player).sendMessage(ChatColor.GREEN + "Medieval Set Home is loading...");
+        verify(player).sendMessage(ChatColor.GREEN + "Dans Set Home is loading...");
         verify(storageService).loadHomeRecords();
     }
 
