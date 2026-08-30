@@ -119,6 +119,14 @@ class StorageServiceTest {
         assertFalse(new File(dataFolder, "Steve.txt").exists());
     }
 
+    @Test
+    void getLegacyDataFolder_defaultsToASiblingOfTheDataFolder() {
+        StorageService service = new StorageService(persistentData, dataFolder);
+
+        assertEquals(tempDir.resolve("Medieval-Set-Home").toFile().getAbsoluteFile(),
+                service.getLegacyDataFolder());
+    }
+
     private HomeRecord recordFor(String playerName) {
         HomeRecord record = new HomeRecord();
         record.setPlayerName(playerName);

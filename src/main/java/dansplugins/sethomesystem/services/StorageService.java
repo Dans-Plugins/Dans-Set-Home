@@ -13,11 +13,11 @@ import java.util.Scanner;
 
 public class StorageService {
     /**
-     * The folder home records were written to before the plugin was renamed. Bukkit derives the
-     * current folder from the plugin's name, so records written under the old name are left behind
-     * unless they are migrated across on startup.
+     * The name of the folder home records were written to before the plugin was renamed. Bukkit
+     * derives the current folder from the plugin's name, so records written under the old name are
+     * left behind unless they are migrated across on startup.
      */
-    public static final File LEGACY_DATA_FOLDER = new File("./plugins/Medieval-Set-Home/");
+    private static final String LEGACY_FOLDER_NAME = "Medieval-Set-Home";
 
     private static final String FILENAME_INDEX = "home-record-filenames.txt";
 
@@ -27,14 +27,23 @@ public class StorageService {
 
     private final boolean debug = false;
 
+    /**
+     * The legacy folder is looked for beside the given data folder rather than under a path
+     * relative to the working directory, so that it is found wherever the server keeps its
+     * plugins.
+     */
     public StorageService(PersistentData persistentData, File dataFolder) {
-        this(persistentData, dataFolder, LEGACY_DATA_FOLDER);
+        this(persistentData, dataFolder, new File(dataFolder.getAbsoluteFile().getParentFile(), LEGACY_FOLDER_NAME));
     }
 
     StorageService(PersistentData persistentData, File dataFolder, File legacyDataFolder) {
         this.persistentData = persistentData;
         this.dataFolder = dataFolder;
         this.legacyDataFolder = legacyDataFolder;
+    }
+
+    public File getLegacyDataFolder() {
+        return legacyDataFolder;
     }
 
     /**

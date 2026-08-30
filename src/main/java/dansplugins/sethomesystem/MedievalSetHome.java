@@ -36,7 +36,7 @@ public class MedievalSetHome extends JavaPlugin implements Listener {
         // move records left in the folder named after the plugin's former name
         int migrated = storageService.migrateLegacyDataFolder();
         if (migrated > 0) {
-            getLogger().info("Migrated " + migrated + " file(s) from " + StorageService.LEGACY_DATA_FOLDER.getPath()
+            getLogger().info("Migrated " + migrated + " file(s) from " + storageService.getLegacyDataFolder().getPath()
                     + " into " + getDataFolder().getPath() + ".");
         }
 
