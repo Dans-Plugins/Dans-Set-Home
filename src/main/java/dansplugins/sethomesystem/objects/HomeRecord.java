@@ -34,20 +34,19 @@ public class HomeRecord {
         return homeLocation;
     }
 
-    public void save() {
+    public void save(File saveFolder) {
         try {
-            File saveFolder = new File("./plugins/Medieval-Set-Home/");
             if (!saveFolder.exists()) {
-                saveFolder.mkdir();
+                saveFolder.mkdirs();
             }
-            File saveFile = new File("./plugins/Medieval-Set-Home/" + playerName + ".txt");
+            File saveFile = new File(saveFolder, playerName + ".txt");
             if (saveFile.createNewFile()) {
                 if (debug) { System.out.println("Save file for record of " + playerName + " created."); }
             } else {
                 if (debug) { System.out.println("Save file for record of " + playerName + " already exists. Altering."); }
             }
 
-            FileWriter saveWriter = new FileWriter("./plugins/Medieval-Set-Home/" + playerName + ".txt");
+            FileWriter saveWriter = new FileWriter(saveFile);
 
             // actual saving takes place here
             saveWriter.write(playerName + "\n");
@@ -71,11 +70,7 @@ public class HomeRecord {
         }
     }
 
-    public void load(String filename) {
-        load(new File("./plugins/Medieval-Set-Home/" + filename));
-    }
-
-    void load(File loadFile) {
+    public void load(File loadFile) {
         String filename = loadFile.getName();
         try {
             Scanner loadReader = new Scanner(loadFile);

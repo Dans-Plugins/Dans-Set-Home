@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+- Saved homes are now kept alongside `config.yml` in `plugins/DansSetHome/`. Home records were written to `plugins/Medieval-Set-Home/`, a folder named after the plugin's former name, while `config.yml` was created in the folder Bukkit derives from the current name — so an administrator found the configuration in one directory and the saved homes in another. Records already on disk under the old name are moved into the current folder the first time the plugin starts, and nothing is moved if the current folder is already in use
 - `/sethome` now explains itself when run from the console instead of returning silently, matching `/home`
 - The `Dev Release` workflow now retries publishing the `dev` prerelease before giving up. The release and its tag have to be deleted and recreated for the tag to move to the new commit, and a transient API failure inside that window previously left the repository with no `dev` release at all until the workflow was re-run by hand. Each attempt now starts from a clean slate, and an exhausted retry fails loudly.
 
