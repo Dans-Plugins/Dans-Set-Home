@@ -103,6 +103,18 @@ class HomeRecordTest {
         assertNull(record.getHomeLocation());
     }
 
+    @Test
+    void save_writesTheRecordIntoTheGivenFolder() throws IOException {
+        HomeRecord record = new HomeRecord();
+        record.setPlayerName("Steve");
+        File saveFolder = tempDir.resolve("DansSetHome").toFile();
+
+        record.save(saveFolder);
+
+        File saved = new File(saveFolder, "Steve.txt");
+        assertEquals("Steve\n", new String(Files.readAllBytes(saved.toPath()), StandardCharsets.UTF_8));
+    }
+
     private File saveFile(String filename, String... lines) throws IOException {
         Path file = tempDir.resolve(filename);
         StringBuilder contents = new StringBuilder();

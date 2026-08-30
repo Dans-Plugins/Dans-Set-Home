@@ -1,6 +1,8 @@
 # Dans Set Home Configuration
 
-Dans Set Home creates a `config.yml` in its data folder on first run.
+Dans Set Home creates a `config.yml` in `plugins/DansSetHome/` on first run. Saved homes are kept in
+the same folder. Servers upgrading from a version that stored homes in `plugins/Medieval-Set-Home/`
+have those files moved across automatically the first time the plugin starts.
 
 | Key | Default | Description |
 |-----|---------|-------------|
