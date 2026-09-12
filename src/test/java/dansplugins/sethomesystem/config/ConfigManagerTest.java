@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -52,24 +53,36 @@ class ConfigManagerTest {
     }
 
     @Test
-    void usageReporting_isOnByDefaultWithTheAuthorsEndpointAndNoKey() {
-        when(config.getBoolean(eq("usage-reporting.enabled"), anyBoolean()))
-                .thenAnswer(invocation -> invocation.getArgument(1));
-        when(config.getString(eq("usage-reporting.endpoint"), anyString()))
-                .thenAnswer(invocation -> invocation.getArgument(1));
-        when(config.getString(eq("usage-reporting.key"), anyString()))
-                .thenAnswer(invocation -> invocation.getArgument(1));
+    void usageReporting_readsThroughToTheBundledDefaultsWhenTheFileHasNoBlock() {
+        // A server upgraded from before usage reporting has no usage-reporting
+        // block in its config.yml. Bukkit's one-argument getters fall through
+        // to the jar's defaults; the two-argument ones would return their
+        // fallback and turn reporting off on every existing installation.
+        when(config.getBoolean("usage-reporting.enabled")).thenReturn(true);
+        when(config.getString("usage-reporting.endpoint")).thenReturn("https://trace.danielstephenson.dev");
+        when(config.getString("usage-reporting.key")).thenReturn("bundled-key");
 
         assertTrue(configManager.isUsageReportingEnabled());
         assertEquals("https://trace.danielstephenson.dev", configManager.getUsageReportingEndpoint());
-        assertEquals("", configManager.getUsageReportingKey(), "no key ships by default; the client treats empty as off");
+        assertEquals("bundled-key", configManager.getUsageReportingKey());
+        verify(config, never()).getString(eq("usage-reporting.key"), anyString());
+        verify(config, never()).getBoolean(eq("usage-reporting.enabled"), anyBoolean());
+    }
+
+    @Test
+    void usageReporting_isOffWithNoKeyAnywhere() {
+        when(config.getString("usage-reporting.key")).thenReturn(null);
+        when(config.getString("usage-reporting.endpoint")).thenReturn(null);
+
+        assertEquals("", configManager.getUsageReportingKey(), "no key anywhere must read as off, not as null");
+        assertEquals("https://trace.danielstephenson.dev", configManager.getUsageReportingEndpoint());
     }
 
     @Test
     void usageReporting_readsTheConfiguredValues() {
-        when(config.getBoolean(eq("usage-reporting.enabled"), anyBoolean())).thenReturn(false);
-        when(config.getString(eq("usage-reporting.endpoint"), anyString())).thenReturn("http://localhost:8080");
-        when(config.getString(eq("usage-reporting.key"), anyString())).thenReturn("abc");
+        when(config.getBoolean("usage-reporting.enabled")).thenReturn(false);
+        when(config.getString("usage-reporting.endpoint")).thenReturn("http://localhost:8080");
+        when(config.getString("usage-reporting.key")).thenReturn("abc");
 
         assertFalse(configManager.isUsageReportingEnabled());
         assertEquals("http://localhost:8080", configManager.getUsageReportingEndpoint());
