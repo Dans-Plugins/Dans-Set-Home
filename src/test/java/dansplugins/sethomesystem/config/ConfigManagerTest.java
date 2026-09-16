@@ -1,12 +1,14 @@
 package dansplugins.sethomesystem.config;
 
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -67,6 +69,59 @@ class ConfigManagerTest {
         assertEquals("bundled-key", configManager.getUsageReportingKey());
         verify(config, never()).getString(eq("usage-reporting.key"), anyString());
         verify(config, never()).getBoolean(eq("usage-reporting.enabled"), anyBoolean());
+    }
+
+    @Test
+    void saveUsageReportingDefaultsIfMissing_putsTheBundledBlockOnDiskWhenTheFileLacksIt() {
+        // A config.yml from before usage reporting, with the jar's config.yml
+        // registered as its defaults the way JavaPlugin.reloadConfig() does.
+        YamlConfiguration onDisk = new YamlConfiguration();
+        onDisk.set("teleport-delay-seconds", 5);
+        YamlConfiguration bundled = new YamlConfiguration();
+        bundled.set("usage-reporting.enabled", true);
+        bundled.set("usage-reporting.endpoint", "https://trace.danielstephenson.dev");
+        bundled.set("usage-reporting.key", "bundled-key");
+        onDisk.setDefaults(bundled);
+        when(plugin.getConfig()).thenReturn(onDisk);
+
+        configManager.saveUsageReportingDefaultsIfMissing();
+
+        verify(plugin).saveConfig();
+        String saved = onDisk.saveToString();
+        assertTrue(saved.contains("enabled: true"), saved);
+        assertTrue(saved.contains("endpoint: https://trace.danielstephenson.dev"), saved);
+        assertTrue(saved.contains("key: bundled-key"), saved);
+        assertTrue(saved.contains("teleport-delay-seconds: 5"), "existing settings must survive: " + saved);
+        assertTrue(onDisk.isSet("usage-reporting"), "the block must now be a real value, not a default");
+    }
+
+    @Test
+    void saveUsageReportingDefaultsIfMissing_leavesAFileThatHasTheBlockAlone() {
+        // In particular an operator's enabled: false must never be undone.
+        YamlConfiguration onDisk = new YamlConfiguration();
+        onDisk.set("usage-reporting.enabled", false);
+        YamlConfiguration bundled = new YamlConfiguration();
+        bundled.set("usage-reporting.enabled", true);
+        bundled.set("usage-reporting.key", "bundled-key");
+        onDisk.setDefaults(bundled);
+        when(plugin.getConfig()).thenReturn(onDisk);
+
+        configManager.saveUsageReportingDefaultsIfMissing();
+
+        verify(plugin, never()).saveConfig();
+        assertFalse(onDisk.getBoolean("usage-reporting.enabled"));
+        assertNull(onDisk.get("usage-reporting.key", null), "nothing must be added beside the operator's switch");
+    }
+
+    @Test
+    void saveUsageReportingDefaultsIfMissing_doesNothingWithoutBundledDefaults() {
+        YamlConfiguration onDisk = new YamlConfiguration();
+        when(plugin.getConfig()).thenReturn(onDisk);
+
+        configManager.saveUsageReportingDefaultsIfMissing();
+
+        verify(plugin, never()).saveConfig();
+        assertFalse(onDisk.isSet("usage-reporting"));
     }
 
     @Test

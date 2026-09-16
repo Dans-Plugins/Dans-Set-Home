@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- Usage reporting is now disclosed on every startup: the plugin logs whether reporting is on (and what is sent, and how to turn it off) or off (and why). A `config.yml` from before the `usage-reporting` block existed is completed with the bundled values so the switch is visible on disk. Two new ways to turn reporting off: `enabled: false` in `plugins/trace/config.yml` (created on first start, shared by every plugin that reports this way) and the environment variables `TRACE_USAGE_REPORTING=off` or `DO_NOT_TRACK=1`. The vendored trace client is 0.2.0. Nothing about what is sent changed; see the README's Usage reporting section
 - Player-facing messages no longer use the plugin's former name. The unrecognised `/dsh` subcommand reply, and the `/dsh forcesave` and `/dsh forceload` confirmations, now say `Dans Set Home`. The unrecognised-subcommand reply also points at `/dsh help`, matching what `/dsh` with no arguments already did
 - `USER_GUIDE.md` now tells players that `/home` waits out a short delay before teleporting and that moving during it cancels the teleport
 
