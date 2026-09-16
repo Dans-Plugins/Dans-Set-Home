@@ -15,6 +15,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.Collections;
 
 public class MedievalSetHome extends JavaPlugin implements Listener {
+    private static final String USAGE_REPORTING_DETAILS_URL = "https://github.com/Stephenson-Software/trace#usage-reporting";
     private final PersistentData persistentData = new PersistentData();
     private final EventRegistry eventRegistry = new EventRegistry(this, persistentData);
     private final ConfigManager configManager = new ConfigManager(this);
@@ -54,13 +55,31 @@ public class MedievalSetHome extends JavaPlugin implements Listener {
         int pluginId = 12126;
         Metrics metrics = new Metrics(this, pluginId);
 
-        // usage reporting: one event now, one per command; see config.yml
+        // usage reporting: one event now, one per command; see config.yml. The
+        // switch is put on disk first so it can be found, then the server-wide
+        // plugins/trace/config.yml and the environment get the last word.
+        configManager.saveUsageReportingDefaultsIfMissing();
         trace = TraceClient.builder(configManager.getUsageReportingEndpoint(), getName())
                 .key(configManager.getUsageReportingKey())
                 .enabled(configManager.isUsageReportingEnabled())
+                .serverWideConfig(getDataFolder().getParentFile())
                 .logger(getLogger())
                 .build();
+        logUsageReportingState();
         trace.report("startup", null, Collections.singletonMap("version", getDescription().getVersion()));
+    }
+
+    /** Says on every startup whether usage reporting is on, what is sent, and how to turn it off. */
+    private void logUsageReportingState() {
+        if (trace.isEnabled()) {
+            getLogger().info("Usage reporting is on: " + getName() + " sends its name, version and command names to "
+                    + configManager.getUsageReportingEndpoint() + " - nothing about players or the server. "
+                    + "Turn it off with usage-reporting.enabled: false in this plugin's config.yml, "
+                    + "or for every plugin with enabled: false in plugins/trace/config.yml. "
+                    + "Details: " + USAGE_REPORTING_DETAILS_URL);
+        } else {
+            getLogger().info("Usage reporting is off (" + trace.disabledReason() + ").");
+        }
     }
 
     @Override
