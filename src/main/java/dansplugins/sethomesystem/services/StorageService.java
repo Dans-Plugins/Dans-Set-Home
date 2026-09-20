@@ -123,7 +123,7 @@ public class StorageService {
 
         } catch (IOException e) {
             logger.log(Level.WARNING, "Could not write the home record index " + new File(dataFolder, FILENAME_INDEX).getPath()
-                    + ". Homes will not be loaded on the next start until it can be written.", e);
+                    + ". Homes set since the last successful save may be missing on the next start.", e);
         }
     }
 
