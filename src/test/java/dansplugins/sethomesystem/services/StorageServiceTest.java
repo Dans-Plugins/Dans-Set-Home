@@ -11,9 +11,17 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class StorageServiceTest {
@@ -25,6 +33,7 @@ class StorageServiceTest {
     private File dataFolder;
     private File legacyDataFolder;
     private PersistentData persistentData;
+    private RecordingHandler log;
     private StorageService storageService;
 
     @BeforeEach
@@ -32,7 +41,12 @@ class StorageServiceTest {
         dataFolder = tempDir.resolve("DansSetHome").toFile();
         legacyDataFolder = tempDir.resolve("Medieval-Set-Home").toFile();
         persistentData = new PersistentData();
-        storageService = new StorageService(persistentData, dataFolder, legacyDataFolder);
+        log = new RecordingHandler();
+        Logger logger = Logger.getLogger("StorageServiceTest." + tempDir.getFileName());
+        logger.setUseParentHandlers(false);
+        logger.setLevel(Level.ALL);
+        logger.addHandler(log);
+        storageService = new StorageService(persistentData, dataFolder, legacyDataFolder, logger);
     }
 
     @Test
@@ -43,6 +57,22 @@ class StorageServiceTest {
 
         assertEquals("Steve.txt\n", contentsOf(new File(dataFolder, FILENAME_INDEX)));
         assertFalse(new File(legacyDataFolder, FILENAME_INDEX).exists());
+        assertEquals(0, log.warnings().size());
+    }
+
+    @Test
+    void saveHomeRecordFileNames_whenTheDataFolderCannotBeCreated_warns() throws IOException {
+        // a regular file where the data folder should be: mkdirs() fails and the index cannot be created
+        Files.write(dataFolder.toPath(), "not a folder".getBytes(StandardCharsets.UTF_8));
+        persistentData.addHomeRecord(recordFor("Steve"));
+
+        storageService.saveHomeRecordFileNames();
+
+        List<LogRecord> warnings = log.warnings();
+        assertEquals(1, warnings.size());
+        assertTrue(warnings.get(0).getMessage().contains(new File(dataFolder, FILENAME_INDEX).getPath()),
+                warnings.get(0).getMessage());
+        assertNotNull(warnings.get(0).getThrown());
     }
 
     @Test
@@ -53,6 +83,19 @@ class StorageServiceTest {
 
         assertEquals("Steve\n", contentsOf(new File(dataFolder, "Steve.txt")));
         assertFalse(new File(legacyDataFolder, "Steve.txt").exists());
+        assertEquals(0, log.warnings().size());
+    }
+
+    @Test
+    void saveHomeRecords_whenARecordCannotBeWritten_warnsForThatPlayer() throws IOException {
+        Files.write(dataFolder.toPath(), "not a folder".getBytes(StandardCharsets.UTF_8));
+        persistentData.addHomeRecord(recordFor("Steve"));
+
+        storageService.saveHomeRecords();
+
+        List<LogRecord> warnings = log.warnings();
+        assertEquals(1, warnings.size());
+        assertTrue(warnings.get(0).getMessage().contains("Steve"), warnings.get(0).getMessage());
     }
 
     @Test
@@ -64,6 +107,28 @@ class StorageServiceTest {
 
         assertEquals(1, persistentData.getHomeRecords().size());
         assertEquals("Steve", persistentData.getHomeRecords().get(0).getPlayerName());
+        assertEquals(0, log.warnings().size());
+    }
+
+    @Test
+    void loadHomeRecords_whenThereIsNoIndexYet_loadsNothingWithoutWarning() {
+        // a server that has never saved has no index, which is the normal first start
+        storageService.loadHomeRecords();
+
+        assertEquals(0, persistentData.getHomeRecords().size());
+        assertEquals(0, log.warnings().size());
+    }
+
+    @Test
+    void loadHomeRecords_whenAnIndexedRecordFileIsMissing_warnsForThatFile() throws IOException {
+        write(dataFolder, FILENAME_INDEX, "Steve.txt\n");
+
+        storageService.loadHomeRecords();
+
+        List<LogRecord> warnings = log.warnings();
+        assertEquals(1, warnings.size());
+        assertTrue(warnings.get(0).getMessage().contains(new File(dataFolder, "Steve.txt").getPath()),
+                warnings.get(0).getMessage());
     }
 
     @Test
@@ -76,6 +141,40 @@ class StorageServiceTest {
         assertEquals("Steve.txt\n", contentsOf(new File(dataFolder, FILENAME_INDEX)));
         assertEquals("Steve\n", contentsOf(new File(dataFolder, "Steve.txt")));
         assertFalse(new File(legacyDataFolder, "Steve.txt").exists());
+        assertEquals(0, log.warnings().size());
+    }
+
+    @Test
+    void migrateLegacyDataFolder_whenTheDataFolderCannotBeCreated_warnsAndMovesNothing() throws IOException {
+        write(legacyDataFolder, FILENAME_INDEX, "Steve.txt\n");
+        write(legacyDataFolder, "Steve.txt", "Steve\n");
+        Files.write(dataFolder.toPath(), "not a folder".getBytes(StandardCharsets.UTF_8));
+
+        assertEquals(0, storageService.migrateLegacyDataFolder());
+
+        assertTrue(new File(legacyDataFolder, "Steve.txt").exists());
+        List<LogRecord> warnings = log.warnings();
+        assertEquals(1, warnings.size());
+        assertTrue(warnings.get(0).getMessage().contains(dataFolder.getPath()), warnings.get(0).getMessage());
+        assertTrue(warnings.get(0).getMessage().contains("2 file(s)"), warnings.get(0).getMessage());
+    }
+
+    @Test
+    void migrateLegacyDataFolder_whenOneFileCannotBeMoved_warnsAndCountsOnlyTheRest() throws IOException {
+        write(legacyDataFolder, FILENAME_INDEX, "Steve.txt\n");
+        write(legacyDataFolder, "Steve.txt", "Steve\n");
+        // a non-empty directory where Steve.txt would land cannot be replaced, so that one move fails
+        write(new File(dataFolder, "Steve.txt"), "child", "");
+
+        assertEquals(1, storageService.migrateLegacyDataFolder());
+
+        assertEquals("Steve.txt\n", contentsOf(new File(dataFolder, FILENAME_INDEX)));
+        assertEquals("Steve\n", contentsOf(new File(legacyDataFolder, "Steve.txt")));
+        List<String> warnings = log.warnings().stream().map(LogRecord::getMessage).collect(Collectors.toList());
+        assertEquals(2, warnings.size(), warnings.toString());
+        assertTrue(warnings.get(0).contains("Steve.txt"), warnings.get(0));
+        assertTrue(warnings.get(1).contains("1 of 2 file(s)"), warnings.get(1));
+        assertTrue(warnings.get(1).contains(legacyDataFolder.getPath()), warnings.get(1));
     }
 
     @Test
@@ -121,7 +220,7 @@ class StorageServiceTest {
 
     @Test
     void getLegacyDataFolder_defaultsToASiblingOfTheDataFolder() {
-        StorageService service = new StorageService(persistentData, dataFolder);
+        StorageService service = new StorageService(persistentData, dataFolder, Logger.getLogger("StorageServiceTest"));
 
         assertEquals(tempDir.resolve("Medieval-Set-Home").toFile().getAbsoluteFile(),
                 service.getLegacyDataFolder());
@@ -144,5 +243,23 @@ class StorageServiceTest {
         } catch (IOException e) {
             throw new AssertionError("Expected " + file + " to be readable.", e);
         }
+    }
+
+    private static final class RecordingHandler extends Handler {
+        private final List<LogRecord> records = new ArrayList<>();
+
+        @Override
+        public void publish(LogRecord record) {
+            records.add(record);
+        }
+
+        List<LogRecord> warnings() {
+            return records.stream()
+                    .filter(record -> record.getLevel().intValue() >= Level.WARNING.intValue())
+                    .collect(Collectors.toList());
+        }
+
+        @Override public void flush() { }
+        @Override public void close() { }
     }
 }

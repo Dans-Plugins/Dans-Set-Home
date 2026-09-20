@@ -9,12 +9,12 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static org.bukkit.Bukkit.getServer;
 
 public class HomeRecord {
-    private final boolean debug = false;
-
     private String playerName = "";
     private Location homeLocation = null;
 
@@ -34,17 +34,19 @@ public class HomeRecord {
         return homeLocation;
     }
 
-    public void save(File saveFolder) {
+    /**
+     * Writes the record to {@code <playerName>.txt} in the given folder. A record that cannot be
+     * written is reported through the given logger at {@link Level#WARNING}, since the player
+     * would otherwise find their home missing after the next restart with nothing in the log
+     * to say why.
+     */
+    public void save(File saveFolder, Logger logger) {
         try {
             if (!saveFolder.exists()) {
                 saveFolder.mkdirs();
             }
             File saveFile = new File(saveFolder, playerName + ".txt");
-            if (saveFile.createNewFile()) {
-                if (debug) { System.out.println("Save file for record of " + playerName + " created."); }
-            } else {
-                if (debug) { System.out.println("Save file for record of " + playerName + " already exists. Altering."); }
-            }
+            saveFile.createNewFile();
 
             FileWriter saveWriter = new FileWriter(saveFile);
 
@@ -52,26 +54,26 @@ public class HomeRecord {
             saveWriter.write(playerName + "\n");
 
             if (homeLocation != null) {
-                // save faction details
                 saveWriter.write(homeLocation.getWorld().getName() + "\n");
                 saveWriter.write(homeLocation.getX() + "\n");
                 saveWriter.write(homeLocation.getY() + "\n");
                 saveWriter.write(homeLocation.getZ() + "\n");
             }
 
-
             saveWriter.close();
 
-            if (debug) { System.out.println("Successfully saved record belonging to  " + playerName + "."); }
-
         } catch (IOException e) {
-            if (debug) { System.out.println("An error occurred saving the record belonging to " + playerName); }
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Could not save the home record of " + playerName + " to "
+                    + new File(saveFolder, playerName + ".txt").getPath() + ".", e);
         }
     }
 
-    public void load(File loadFile) {
-        String filename = loadFile.getName();
+    /**
+     * Reads the record from the given file. A file that cannot be read, or whose home location
+     * is malformed, is reported through the given logger at {@link Level#WARNING}; a record with
+     * no home location at all is a player who has not run {@code /sethome}, and is not a failure.
+     */
+    public void load(File loadFile, Logger logger) {
         try {
             Scanner loadReader = new Scanner(loadFile);
 
@@ -86,55 +88,41 @@ public class HomeRecord {
             Double z = null;
 
             try {
-                if (debug) { System.out.println("Attempting to load home location for " + playerName + "..."); }
-
                 if (loadReader.hasNextLine()) {
                     world = getServer().createWorld(new WorldCreator(loadReader.nextLine()));
-                    if (debug) { System.out.println("World successfully acquired."); }
-                }
-                else {
-                    if (debug) { System.out.println("World name not found in file!"); }
                 }
                 if (loadReader.hasNextLine()) {
                     x = Double.parseDouble(loadReader.nextLine());
                 }
-                else {
-                    if (debug) { System.out.println("X position not found in file!"); }
-                }
-                if (loadReader.hasNextLine()) {//
+                if (loadReader.hasNextLine()) {
                     y = Double.parseDouble(loadReader.nextLine());
-                }
-                else {
-                    if (debug) { System.out.println("Y position not found in file!"); }
                 }
                 if (loadReader.hasNextLine()) {
                     z = Double.parseDouble(loadReader.nextLine());
-                }
-                else {
-                    if (debug) { System.out.println("Z position not found in file!"); }
                 }
 
                 // set location - each coordinate is tracked by whether it was read at all, so that
                 // a legitimately saved 0 is not mistaken for a missing value
                 if (world != null && x != null && y != null && z != null) {
                     homeLocation = new Location(world, x, y, z);
-                    if (debug) { System.out.println("Home of " + playerName + " successfully set to " + x + ", " + y + ", " + z + "."); }
                 }
-                else {
-                    if (debug) { System.out.println("One of the variables the home location depends on wasn't loaded!"); }
+                else if (world != null) {
+                    // a world line with no complete set of coordinates after it is a truncated
+                    // record, not a player without a home
+                    logger.warning("The home record of " + playerName + " in " + loadFile.getPath()
+                            + " is missing one or more coordinates. The home was not loaded.");
                 }
 
             }
             catch(Exception e) {
-                if (debug) { System.out.println("An error occurred loading the home position."); }
-                e.printStackTrace();
+                logger.log(Level.WARNING, "The home record of " + playerName + " in " + loadFile.getPath()
+                        + " could not be read as a home location. The home was not loaded.", e);
             }
 
             loadReader.close();
-            if (debug) { System.out.println("Home of " + playerName + " successfully loaded."); }
         } catch (FileNotFoundException e) {
-            if (debug) { System.out.println("An error occurred loading the file " + filename + "."); }
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Could not read the home record " + loadFile.getPath()
+                    + ". The home of " + playerName + " was not loaded.", e);
         }
     }
 }
