@@ -1,6 +1,10 @@
 # Dan's Set Home
 This Minecraft plugin allows players to set and teleport to home locations. 
 
+## Download
+- [SpigotMC](https://www.spigotmc.org/resources/dans-set-home.79986/)
+- [GitHub releases](https://github.com/Dans-Plugins/Dans-Set-Home/releases)
+
 ## Usage reporting
 
 Usage reporting is on by default: when the plugin is enabled, and each time one of its commands is
