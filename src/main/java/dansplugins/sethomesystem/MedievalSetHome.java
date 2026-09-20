@@ -35,7 +35,7 @@ public class MedievalSetHome extends JavaPlugin implements Listener {
         // load config
         configManager.saveDefaultConfig();
 
-        storageService = new StorageService(persistentData, getDataFolder());
+        storageService = new StorageService(persistentData, getDataFolder(), getLogger());
         commandService = new CommandService(persistentData, this, storageService, configManager);
 
         // register events
