@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 
 - A home record that cannot be saved, loaded or migrated is now reported in the server log as a warning, naming the player and the file. Every failure in the storage code was previously swallowed behind a debug flag that could not be turned on, so a data folder that was not writable, a record left behind by the legacy-folder migration, or a corrupt record file all looked like a clean start while the affected players simply found their home missing. A partial migration now also says how many files were left in `plugins/Medieval-Set-Home/` and that they have to be moved by hand, since the migration is not retried once the current folder is in use
+- `/home` run before `/sethome` now says `You don't have a home set.` instead of `Home location was null. Please contact the developer.`, and `/home <player>` for a player who has joined but never set a home says `That player doesn't have a home set.` Every player is given an empty home record when they join, so the "no home set" replies were only reached for names that had never joined
 
 ## [1.3.0] – 2026-09-19
 
