@@ -49,21 +49,22 @@ public class HomeCommand {
             name = player.getName();
         }
 
+        // JoinListener gives every player a record without a location, so a record with no
+        // location is a player who has not set a home yet, not an error
         HomeRecord record;
         try {
             record = persistentData.getHomeRecord(name);
         } catch (HomeRecordNotFoundException e) {
+            record = null;
+        }
+
+        if (record == null || record.getHomeLocation() == null) {
             if (player.getName().equalsIgnoreCase(name)) {
                 player.sendMessage(RED + "You don't have a home set.");
             }
             else {
                 player.sendMessage(RED + "That player doesn't have a home set.");
             }
-            return false;
-        }
-
-        if (record.getHomeLocation() == null) {
-            player.sendMessage(RED + "Home location was null. Please contact the developer.");
             return false;
         }
 

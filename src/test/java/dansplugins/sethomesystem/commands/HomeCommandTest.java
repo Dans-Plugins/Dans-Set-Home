@@ -113,7 +113,7 @@ class HomeCommandTest {
     }
 
     @Test
-    void execute_homeLocationNull_sendsMessage() {
+    void execute_selfRecordWithoutLocation_sendsNoHomeSetMessage() {
         Player player = mock(Player.class);
         when(player.getName()).thenReturn("Steve");
         when(player.hasPermission("dsh.home")).thenReturn(true);
@@ -122,7 +122,23 @@ class HomeCommandTest {
         boolean result = homeCommand.execute(player, new String[0]);
 
         assertFalse(result);
-        verify(player).sendMessage(org.bukkit.ChatColor.RED + "Home location was null. Please contact the developer.");
+        verify(player).sendMessage(org.bukkit.ChatColor.RED + "You don't have a home set.");
+        verify(scheduler, never()).runTaskLater(any(), any(Runnable.class), anyLong());
+    }
+
+    @Test
+    void execute_othersRecordWithoutLocation_sendsNoHomeSetMessage() {
+        Player player = mock(Player.class);
+        when(player.getName()).thenReturn("Steve");
+        when(player.hasPermission("dsh.home")).thenReturn(true);
+        when(player.hasPermission("dsh.home.others")).thenReturn(true);
+        persistentData.addHomeRecord(recordFor("Alex", null));
+
+        boolean result = homeCommand.execute(player, new String[]{"Alex"});
+
+        assertFalse(result);
+        verify(player).sendMessage(org.bukkit.ChatColor.RED + "That player doesn't have a home set.");
+        verify(scheduler, never()).runTaskLater(any(), any(Runnable.class), anyLong());
     }
 
     @Test
