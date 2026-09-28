@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- The vendored trace client is now 0.3.0. `plugins/trace/config.yml` can now carry a `tags:` block whose entries are added to every usage event the plugin sends, so a test server can mark its own events (the release gates write `ci: "true"`) and be left out of the figures for real installations. Nothing changes for a server whose `plugins/trace/config.yml` has no `tags:` block.
+
 ### Fixed
 
 - A home record that cannot be saved, loaded or migrated is now reported in the server log as a warning, naming the player and the file. Every failure in the storage code was previously swallowed behind a debug flag that could not be turned on, so a data folder that was not writable, a record left behind by the legacy-folder migration, or a corrupt record file all looked like a clean start while the affected players simply found their home missing. A partial migration now also says how many files were left in `plugins/Medieval-Set-Home/` and that they have to be moved by hand, since the migration is not retried once the current folder is in use
