@@ -59,14 +59,14 @@ public class MedievalSetHome extends JavaPlugin implements Listener {
         // switch is put on disk first so it can be found, then the server-wide
         // plugins/trace/config.yml and the environment get the last word.
         configManager.saveUsageReportingDefaultsIfMissing();
-        trace = TraceClient.builder(configManager.getUsageReportingEndpoint(), getName())
+        trace = TraceClient.builder(configManager.getUsageReportingEndpoint(), getName(), getDescription().getVersion())
                 .key(configManager.getUsageReportingKey())
                 .enabled(configManager.isUsageReportingEnabled())
                 .serverWideConfig(getDataFolder().getParentFile())
                 .logger(getLogger())
                 .build();
         logUsageReportingState();
-        trace.report("startup", null, Collections.singletonMap("version", getDescription().getVersion()));
+        trace.report("startup");
     }
 
     /** Says on every startup whether usage reporting is on, what is sent, and how to turn it off. */
