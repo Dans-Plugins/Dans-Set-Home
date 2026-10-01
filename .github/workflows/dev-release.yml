@@ -38,6 +38,11 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+          # A Maven Central rate limit (429) while resolving plugins has failed this build before,
+          # leaving the dev prerelease on an older commit. Restoring ~/.m2/repository from the cache
+          # takes those downloads off the critical path. The cache does not change the built JAR,
+          # so release.yml does not need to mirror it.
+          cache: maven
 
       - name: Build with Maven
         run: mvn clean package
