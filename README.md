@@ -13,8 +13,12 @@ This plugin is supported on the Minecraft versions listed in [`minecraft-version
 Usage reporting is on by default: when the plugin is enabled, and each time one of its commands is
 used, it sends its name, its version and the command's name (`startup` and `command` events) to
 https://trace.danielstephenson.dev so it is known which plugins are actually in use. Nothing about
-players, worlds, IPs, the server, or anything typed after a command is sent. The plugin says on
-every startup whether reporting is on. To turn it off:
+players, worlds, IPs, or anything typed after a command is sent. The plugin says on
+every startup whether reporting is on. Each event also carries a random server ID (the `server-id` line in `plugins/trace/config.yml`) so
+servers can be counted rather than events. It identifies no person, account or IP address; delete
+the line to get a new one.
+
+To turn it off:
 
 - for this plugin: `usage-reporting.enabled: false` in `plugins/DansSetHome/config.yml`
 - for every plugin on the server that reports this way: `enabled: false` in `plugins/trace/config.yml`
