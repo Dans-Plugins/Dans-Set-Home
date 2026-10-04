@@ -73,7 +73,7 @@ public class MedievalSetHome extends JavaPlugin implements Listener {
     private void logUsageReportingState() {
         if (trace.isEnabled()) {
             getLogger().info("Usage reporting is on: " + getName() + " sends its name, version and command names to "
-                    + configManager.getUsageReportingEndpoint() + " - nothing about players or the server. "
+                    + configManager.getUsageReportingEndpoint() + ", plus a random server ID (server-id in plugins/trace/config.yml) - nothing about players. "
                     + "Turn it off with usage-reporting.enabled: false in this plugin's config.yml, "
                     + "or for every plugin with enabled: false in plugins/trace/config.yml. "
                     + "Details: " + USAGE_REPORTING_DETAILS_URL);
