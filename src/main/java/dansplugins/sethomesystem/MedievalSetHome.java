@@ -15,7 +15,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.Collections;
 
 public class MedievalSetHome extends JavaPlugin implements Listener {
-    private static final String USAGE_REPORTING_DETAILS_URL = "https://github.com/Stephenson-Software/trace#usage-reporting";
+    private static final String USAGE_REPORTING_DETAILS_URL = "https://danielstephenson.dev/usage-reporting";
     private final PersistentData persistentData = new PersistentData();
     private final EventRegistry eventRegistry = new EventRegistry(this, persistentData);
     private final ConfigManager configManager = new ConfigManager(this);
