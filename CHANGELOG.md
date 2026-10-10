@@ -6,8 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.5.0] – 2026-10-08
+
+### Added
+
+- Minecraft 26.3 is now supported: it is listed in `minecraft-versions.json`, so every stable release is booted on a real 26.3 server and every build checks the plugin against the 26.3 Spigot API
+
 ### Changed
 
+- When usage reporting is on, every event now carries a random server ID as the tag `install`, so distinct servers can be counted. The first time reporting starts, the ID is appended as a `server-id:` line (under an explanatory comment) to `plugins/trace/config.yml`; it is shared by every plugin on the server that reports this way, identifies no person, account or IP address, and deleting the line gets a new one. A server with reporting turned off by any of the existing switches never creates, reads or sends an ID. The vendored trace client is 0.5.0 for this change
+- The startup notice and the default `config.yml` comment now say that the random server ID is sent; they previously said nothing about the server was sent
 - The usage-reporting "Details" link (startup notice, `config.yml` and the docs) now points at https://danielstephenson.dev/usage-reporting, a public page; the previous link led to a private repository and returned 404 for everyone. The vendored trace client is now 0.6.1, which carries the same link in the `plugins/trace/config.yml` header it writes. Details: https://github.com/Stephenson-Software/trace-client-java/releases/tag/0.6.1.
 
 ## [1.4.0] – 2026-10-02
