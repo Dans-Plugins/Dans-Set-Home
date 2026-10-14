@@ -5,6 +5,7 @@ import dansplugins.sethomesystem.commands.*;
 import dansplugins.sethomesystem.config.ConfigManager;
 import dansplugins.sethomesystem.data.PersistentData;
 import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 public class CommandService {
@@ -20,22 +21,26 @@ public class CommandService {
         this.configManager = configManager;
     }
 
-    public boolean interpretCommand(CommandSender sender, String label, String[] args) {
+    public boolean interpretCommand(CommandSender sender, Command cmd, String[] args) {
+        // the registered name rather than the label, which is whatever was typed: /danssethome:home
+        // arrives with the label danssethome:home, and is the only way to reach these commands when
+        // another plugin also registers /home or /sethome
+        String name = cmd.getName();
 
         // sethome command
-        if (label.equalsIgnoreCase("sethome")) {
+        if (name.equalsIgnoreCase("sethome")) {
             SetHomeCommand command = new SetHomeCommand(persistentData);
             return command.execute(sender);
         }
 
         // home command
-        if (label.equalsIgnoreCase("home")) {
+        if (name.equalsIgnoreCase("home")) {
             HomeCommand command = new HomeCommand(persistentData, medievalSetHome, configManager);
             return command.execute(sender, args);
         }
 
         // dsh command
-        if (label.equalsIgnoreCase("dsh")) {
+        if (name.equalsIgnoreCase("dsh")) {
             // args check
             if (args.length == 0) {
                 sender.sendMessage(ChatColor.RED + "Try /dsh help");
