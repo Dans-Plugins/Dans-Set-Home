@@ -97,6 +97,6 @@ public class MedievalSetHome extends JavaPlugin implements Listener {
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         trace.report("command", null, Collections.singletonMap("name", cmd.getName()));
-        return commandService.interpretCommand(sender, label, args);
+        return commandService.interpretCommand(sender, cmd, args);
     }
 }
