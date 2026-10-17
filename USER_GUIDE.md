@@ -22,6 +22,21 @@ is up, the teleport is cancelled and you are told why. Server administrators can
 the length of the delay with the `teleport-delay-seconds` option described in
 [CONFIG.md](CONFIG.md).
 
+Each player has one home. Running `/sethome` again replaces it with your current location.
+
+## Visiting Other Players' Homes
+
+Players with the `dsh.home.others` permission (operators by default) can run `/home <player>`
+to teleport to that player's home. The name is not case-sensitive, and the same delay and
+stand-still rule apply. Without the permission, `/home` followed by any name is refused, even your
+own name. If the player has never set a home, you are told that they don't have one.
+
+## Commands
+
+See [COMMANDS.md](COMMANDS.md) for every command and its permission. If another plugin on the
+server also provides `/home` or `/sethome`, use `/danssethome:home` and `/danssethome:sethome`
+instead.
+
 ## Permissions
 
 | Permission | Default | Description |

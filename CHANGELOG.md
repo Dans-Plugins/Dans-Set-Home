@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.5.1] – 2026-10-16
+
 ### Fixed
 
 - `/danssethome:home`, `/danssethome:sethome` and `/danssethome:dsh` now work. Commands were matched against the text typed rather than the command's name, so the namespaced forms, which are the only way to reach these commands on a server where another plugin also registers `/home` or `/sethome`, did nothing but print the command's name back
