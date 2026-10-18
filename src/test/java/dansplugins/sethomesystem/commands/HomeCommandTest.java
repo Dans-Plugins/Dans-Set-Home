@@ -84,6 +84,7 @@ class HomeCommandTest {
         boolean result = homeCommand.execute(player, new String[]{"OtherPlayer"});
 
         assertFalse(result);
+        verify(player).sendMessage(org.bukkit.ChatColor.RED + "You don't have permission to teleport to other players' homes.");
         verify(scheduler, never()).runTaskLater(any(), any(Runnable.class), anyLong());
     }
 
