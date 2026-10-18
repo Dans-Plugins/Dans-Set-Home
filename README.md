@@ -1,4 +1,9 @@
 # Dan's Set Home
+
+![/sethome, then /home starting a three-second teleport back to the home](docs/images/sethome-and-home.png)
+
+*Real in-game output from Dan's Set Home 1.5.1 on a local throwaway Paper 1.21.11 test server: the commands were typed by a scripted bot client, and the chat it received is drawn as Minecraft-style chat (typed commands appear in the input bars; grey lines say what happened between commands).*
+
 This Minecraft plugin allows players to set and teleport to home locations. 
 
 ## Documentation
