@@ -40,7 +40,7 @@ public class HomeCommand {
         String name;
         if (args.length > 0) {
             if (!player.hasPermission("dsh.home.others")) {
-                player.sendMessage(RED + "Only operators can teleport to other players' homes.");
+                player.sendMessage(RED + "You don't have permission to teleport to other players' homes.");
                 return false;
             }
             name = args[0];
