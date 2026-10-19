@@ -7,7 +7,6 @@ import org.bukkit.entity.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -26,13 +25,13 @@ class ForceLoadCommandTest {
     }
 
     @Test
-    void execute_playerWithoutPermission_returnsFalse() {
+    void execute_playerWithoutPermission_returnsTrue() {
         Player player = mock(Player.class);
         when(player.hasPermission("dsh.forceload")).thenReturn(false);
 
         boolean result = forceLoadCommand.execute(player);
 
-        assertFalse(result);
+        assertTrue(result);
         verify(player).sendMessage(ChatColor.RED + "You don't have permission to use this command.");
         verifyNoInteractions(storageService);
     }

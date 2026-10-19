@@ -11,7 +11,7 @@ public class HelpCommand {
             Player player = (Player) sender;
             if (!player.hasPermission("dsh.help")) {
                 sender.sendMessage(ChatColor.RED + "You don't have permission to use this command.");
-                return false;
+                return true;
             }
         }
         sender.sendMessage(ChatColor.AQUA + "/dsh help - View a list of helpful commands.");

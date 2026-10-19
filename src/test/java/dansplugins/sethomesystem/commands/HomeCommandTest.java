@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -55,35 +54,35 @@ class HomeCommandTest {
     }
 
     @Test
-    void execute_nonPlayerSender_sendsMessageAndReturnsFalse() {
+    void execute_nonPlayerSender_sendsMessageAndReturnsTrue() {
         CommandSender sender = mock(CommandSender.class);
 
         boolean result = homeCommand.execute(sender, new String[0]);
 
-        assertFalse(result);
+        assertTrue(result);
         verify(sender).sendMessage("Only players can use this command.");
     }
 
     @Test
-    void execute_playerWithoutHomePermission_returnsFalse() {
+    void execute_playerWithoutHomePermission_returnsTrue() {
         Player player = mock(Player.class);
         when(player.hasPermission("dsh.home")).thenReturn(false);
 
         boolean result = homeCommand.execute(player, new String[0]);
 
-        assertFalse(result);
+        assertTrue(result);
         verify(scheduler, never()).runTaskLater(any(), any(Runnable.class), anyLong());
     }
 
     @Test
-    void execute_argsWithoutOthersPermission_returnsFalse() {
+    void execute_argsWithoutOthersPermission_returnsTrue() {
         Player player = mock(Player.class);
         when(player.hasPermission("dsh.home")).thenReturn(true);
         when(player.hasPermission("dsh.home.others")).thenReturn(false);
 
         boolean result = homeCommand.execute(player, new String[]{"OtherPlayer"});
 
-        assertFalse(result);
+        assertTrue(result);
         verify(player).sendMessage(org.bukkit.ChatColor.RED + "You don't have permission to teleport to other players' homes.");
         verify(scheduler, never()).runTaskLater(any(), any(Runnable.class), anyLong());
     }
@@ -96,7 +95,7 @@ class HomeCommandTest {
 
         boolean result = homeCommand.execute(player, new String[0]);
 
-        assertFalse(result);
+        assertTrue(result);
         verify(player).sendMessage(org.bukkit.ChatColor.RED + "You don't have a home set.");
     }
 
@@ -109,7 +108,7 @@ class HomeCommandTest {
 
         boolean result = homeCommand.execute(player, new String[]{"Alex"});
 
-        assertFalse(result);
+        assertTrue(result);
         verify(player).sendMessage(org.bukkit.ChatColor.RED + "That player doesn't have a home set.");
     }
 
@@ -122,7 +121,7 @@ class HomeCommandTest {
 
         boolean result = homeCommand.execute(player, new String[0]);
 
-        assertFalse(result);
+        assertTrue(result);
         verify(player).sendMessage(org.bukkit.ChatColor.RED + "You don't have a home set.");
         verify(scheduler, never()).runTaskLater(any(), any(Runnable.class), anyLong());
     }
@@ -137,7 +136,7 @@ class HomeCommandTest {
 
         boolean result = homeCommand.execute(player, new String[]{"Alex"});
 
-        assertFalse(result);
+        assertTrue(result);
         verify(player).sendMessage(org.bukkit.ChatColor.RED + "That player doesn't have a home set.");
         verify(scheduler, never()).runTaskLater(any(), any(Runnable.class), anyLong());
     }

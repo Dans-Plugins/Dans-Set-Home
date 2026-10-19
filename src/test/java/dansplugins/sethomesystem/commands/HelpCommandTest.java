@@ -7,7 +7,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.inOrder;
@@ -32,13 +31,13 @@ class HelpCommandTest {
     }
 
     @Test
-    void execute_playerWithoutPermission_returnsFalseAndListsNothing() {
+    void execute_playerWithoutPermission_returnsTrueAndListsNothing() {
         Player player = mock(Player.class);
         when(player.hasPermission("dsh.help")).thenReturn(false);
 
         boolean result = helpCommand.execute(player);
 
-        assertFalse(result);
+        assertTrue(result);
         verify(player).sendMessage(ChatColor.RED + "You don't have permission to use this command.");
         verify(player, times(1)).sendMessage(anyString());
     }

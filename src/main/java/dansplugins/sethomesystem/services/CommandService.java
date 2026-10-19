@@ -21,6 +21,9 @@ public class CommandService {
         this.configManager = configManager;
     }
 
+    // Returns true whenever the sender has been answered, refusals included. On false, Bukkit also
+    // sends the command's usage message, which plugin.yml leaves at its default of "/" + name, so a
+    // refusal would be followed by a bare /home, /sethome or /dsh line.
     public boolean interpretCommand(CommandSender sender, Command cmd, String[] args) {
         // the registered name rather than the label, which is whatever was typed: /danssethome:home
         // arrives with the label danssethome:home, and is the only way to reach these commands when
@@ -44,7 +47,7 @@ public class CommandService {
             // args check
             if (args.length == 0) {
                 sender.sendMessage(ChatColor.RED + "Try /dsh help");
-                return false;
+                return true;
             }
 
             // help command
@@ -66,6 +69,7 @@ public class CommandService {
             }
 
             sender.sendMessage(ChatColor.RED + "Dans Set Home doesn't recognize that command. Try /dsh help");
+            return true;
         }
 
         return false;
