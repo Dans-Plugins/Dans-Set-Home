@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 
 - `/home <player>` without the `dsh.home.others` permission now replies "You don't have permission to teleport to other players' homes." instead of "Only operators can teleport to other players' homes.", which was wrong whenever a permissions plugin granted the node to a non-operator or revoked it from an operator
+- Refusals and error replies (`You don't have a home set.`, a missing permission, `/sethome` or `/home` from the console, `/dsh` with no or an unrecognised subcommand) are no longer followed by a bare `/home`, `/sethome` or `/dsh` line. Each of these replies told the server the command had failed, and the server then printed the command's usage, which is just its name
 
 ## [1.5.1] – 2026-10-16
 

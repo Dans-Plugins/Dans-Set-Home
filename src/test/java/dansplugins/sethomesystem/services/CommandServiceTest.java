@@ -37,7 +37,7 @@ class CommandServiceTest {
 
         boolean result = commandService.interpretCommand(sender, command("dsh"), new String[]{});
 
-        assertFalse(result);
+        assertTrue(result);
         verify(sender).sendMessage(ChatColor.RED + "Try /dsh help");
     }
 
@@ -47,7 +47,7 @@ class CommandServiceTest {
 
         boolean result = commandService.interpretCommand(sender, command("dsh"), new String[]{"bogus"});
 
-        assertFalse(result);
+        assertTrue(result);
         verify(sender).sendMessage(ChatColor.RED + "Dans Set Home doesn't recognize that command. Try /dsh help");
         verifyNoInteractions(storageService);
     }

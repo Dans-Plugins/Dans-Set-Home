@@ -27,21 +27,21 @@ public class HomeCommand {
     public boolean execute(CommandSender sender, String[] args) {
         if (!(sender instanceof Player)) {
             sender.sendMessage("Only players can use this command.");
-            return false;
+            return true;
         }
 
         Player player = (Player) sender;
 
         if (!player.hasPermission("dsh.home")) {
             player.sendMessage(RED + "You don't have permission to use this command.");
-            return false;
+            return true;
         }
 
         String name;
         if (args.length > 0) {
             if (!player.hasPermission("dsh.home.others")) {
                 player.sendMessage(RED + "You don't have permission to teleport to other players' homes.");
-                return false;
+                return true;
             }
             name = args[0];
         }
@@ -65,7 +65,7 @@ public class HomeCommand {
             else {
                 player.sendMessage(RED + "That player doesn't have a home set.");
             }
-            return false;
+            return true;
         }
 
         int seconds = configManager.getTeleportDelaySeconds();

@@ -12,7 +12,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -33,24 +32,24 @@ class SetHomeCommandTest {
     }
 
     @Test
-    void execute_nonPlayerSender_sendsMessageAndReturnsFalse() {
+    void execute_nonPlayerSender_sendsMessageAndReturnsTrue() {
         CommandSender sender = mock(CommandSender.class);
 
         boolean result = setHomeCommand.execute(sender);
 
-        assertFalse(result);
+        assertTrue(result);
         verify(sender).sendMessage("Only players can use this command.");
         assertTrue(persistentData.getHomeRecords().isEmpty());
     }
 
     @Test
-    void execute_playerWithoutPermission_returnsFalse() {
+    void execute_playerWithoutPermission_returnsTrue() {
         Player player = mock(Player.class);
         when(player.hasPermission("dsh.sethome")).thenReturn(false);
 
         boolean result = setHomeCommand.execute(player);
 
-        assertFalse(result);
+        assertTrue(result);
         verify(player).sendMessage(ChatColor.RED + "You don't have permission to use this command.");
         verify(player, never()).getLocation();
         assertTrue(persistentData.getHomeRecords().isEmpty());

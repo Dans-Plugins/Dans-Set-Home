@@ -17,7 +17,7 @@ public class ForceLoadCommand {
             Player player = (Player) sender;
             if (!player.hasPermission("dsh.forceload")) {
                 sender.sendMessage(ChatColor.RED + "You don't have permission to use this command.");
-                return false;
+                return true;
             }
         }
 
