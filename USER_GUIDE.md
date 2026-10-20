@@ -6,7 +6,7 @@ Dans Set Home is a simple Spigot plugin that lets players set a home location an
 
 ## Installation
 
-1. Download the latest `DansSetHome-<version>.jar` from the [Releases](https://github.com/Dans-Plugins/Dans-Set-Home/releases) page.
+1. Download the latest `Dans-Set-Home-<version>.jar` from the [Releases](https://github.com/Dans-Plugins/Dans-Set-Home/releases) page.
 2. Place the JAR in your server's `plugins/` folder.
 3. Restart the server.
 
@@ -17,8 +17,9 @@ Dans Set Home is a simple Spigot plugin that lets players set a home location an
 3. Run `/home` at any time to teleport back.
 
 `/home` does not teleport you straight away. A short delay runs first — 3 seconds by
-default — and you have to stand still for it. If your position changes before the delay
-is up, the teleport is cancelled and you are told why. Server administrators can change
+default — and you have to stand still for it. Your position is checked when the delay
+ends: if you are no longer standing where you ran the command, the teleport is cancelled and
+you are told why. Looking around does not count as moving. Server administrators can change
 the length of the delay with the `teleport-delay-seconds` option described in
 [CONFIG.md](CONFIG.md).
 
@@ -45,8 +46,8 @@ instead.
 | `dsh.home` | `true` | Teleport to your home. |
 | `dsh.sethome` | `true` | Set your home location. |
 | `dsh.home.others` | `op` | Teleport to another player's home. |
-| `dsh.forcesave` | `op` | Force-save player data from the console. |
-| `dsh.forceload` | `op` | Force-load player data from the console. |
+| `dsh.forcesave` | `op` | Run `/dsh forcesave` in game. The console can always run it. |
+| `dsh.forceload` | `op` | Run `/dsh forceload` in game. The console can always run it. |
 
 ## Support
 
