@@ -21,10 +21,10 @@ public class HelpCommand {
             sender.sendMessage(ChatColor.AQUA + "/home <ign> - Teleport to a player's home location.");
         }
         if (sender.hasPermission("dsh.forcesave")) {
-            sender.sendMessage(ChatColor.AQUA + "/dsh forcesave - Force a save from the console.");
+            sender.sendMessage(ChatColor.AQUA + "/dsh forcesave - Write every home to disk now.");
         }
         if (sender.hasPermission("dsh.forceload")) {
-            sender.sendMessage(ChatColor.AQUA + "/dsh forceload - Force a load from the console.");
+            sender.sendMessage(ChatColor.AQUA + "/dsh forceload - Read homes back from disk, undoing any /sethome since the last save.");
         }
         return true;
     }

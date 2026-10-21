@@ -58,6 +58,8 @@ public class HomeRecord {
                 saveWriter.write(homeLocation.getX() + "\n");
                 saveWriter.write(homeLocation.getY() + "\n");
                 saveWriter.write(homeLocation.getZ() + "\n");
+                saveWriter.write(homeLocation.getYaw() + "\n");
+                saveWriter.write(homeLocation.getPitch() + "\n");
             }
 
             saveWriter.close();
@@ -86,6 +88,10 @@ public class HomeRecord {
             Double x = null;
             Double y = null;
             Double z = null;
+            // the facing direction was not saved before 1.5.2, so a file without it still loads,
+            // facing the way new Location(world, x, y, z) does
+            float yaw = 0;
+            float pitch = 0;
 
             try {
                 if (loadReader.hasNextLine()) {
@@ -100,11 +106,17 @@ public class HomeRecord {
                 if (loadReader.hasNextLine()) {
                     z = Double.parseDouble(loadReader.nextLine());
                 }
+                if (loadReader.hasNextLine()) {
+                    yaw = Float.parseFloat(loadReader.nextLine());
+                }
+                if (loadReader.hasNextLine()) {
+                    pitch = Float.parseFloat(loadReader.nextLine());
+                }
 
                 // set location - each coordinate is tracked by whether it was read at all, so that
                 // a legitimately saved 0 is not mistaken for a missing value
                 if (world != null && x != null && y != null && z != null) {
-                    homeLocation = new Location(world, x, y, z);
+                    homeLocation = new Location(world, x, y, z, yaw, pitch);
                 }
                 else if (world != null) {
                     // a world line with no complete set of coordinates after it is a truncated
