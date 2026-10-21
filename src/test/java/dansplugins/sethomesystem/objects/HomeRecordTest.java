@@ -1,6 +1,7 @@
 package dansplugins.sethomesystem.objects;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
@@ -72,6 +73,52 @@ class HomeRecordTest {
         assertEquals(64.0, record.getHomeLocation().getY());
         assertEquals(-33.25, record.getHomeLocation().getZ());
         assertEquals(world, record.getHomeLocation().getWorld());
+        assertEquals(0, log.warnings().size());
+    }
+
+    @Test
+    void load_withFacingDirection_restoresYawAndPitch() throws IOException {
+        HomeRecord record = new HomeRecord();
+
+        record.load(saveFile("Steve.txt", "Steve", "world", "11.5", "64.0", "-33.25", "135.5", "-20.0"), logger);
+
+        assertNotNull(record.getHomeLocation());
+        assertEquals(135.5f, record.getHomeLocation().getYaw());
+        assertEquals(-20.0f, record.getHomeLocation().getPitch());
+        assertEquals(0, log.warnings().size());
+    }
+
+    @Test
+    void load_fileWithoutFacingDirection_stillLoadsLocationFacingDefault() throws IOException {
+        // files written before the facing direction was saved end after z
+        HomeRecord record = new HomeRecord();
+
+        record.load(saveFile("Steve.txt", "Steve", "world", "11.5", "64.0", "-33.25"), logger);
+
+        assertNotNull(record.getHomeLocation());
+        assertEquals(0.0f, record.getHomeLocation().getYaw());
+        assertEquals(0.0f, record.getHomeLocation().getPitch());
+        assertEquals(0, log.warnings().size());
+    }
+
+    @Test
+    void saveThenLoad_keepsTheFacingDirection() {
+        when(world.getName()).thenReturn("world");
+        HomeRecord saved = new HomeRecord();
+        saved.setPlayerName("Steve");
+        saved.setHomeLocation(new Location(world, 11.5, 64.0, -33.25, 135.5f, -20.0f));
+        File saveFolder = tempDir.resolve("DansSetHome").toFile();
+        saved.save(saveFolder, logger);
+
+        HomeRecord loaded = new HomeRecord();
+        loaded.load(new File(saveFolder, "Steve.txt"), logger);
+
+        assertNotNull(loaded.getHomeLocation());
+        assertEquals(11.5, loaded.getHomeLocation().getX());
+        assertEquals(64.0, loaded.getHomeLocation().getY());
+        assertEquals(-33.25, loaded.getHomeLocation().getZ());
+        assertEquals(135.5f, loaded.getHomeLocation().getYaw());
+        assertEquals(-20.0f, loaded.getHomeLocation().getPitch());
         assertEquals(0, log.warnings().size());
     }
 

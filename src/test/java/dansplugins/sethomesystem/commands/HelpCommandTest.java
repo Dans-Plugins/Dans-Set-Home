@@ -20,8 +20,8 @@ class HelpCommandTest {
     private static final String SETHOME_LINE = ChatColor.AQUA + "/sethome - Set your home location.";
     private static final String HOME_LINE = ChatColor.AQUA + "/home - Teleport to your home location.";
     private static final String HOME_OTHERS_LINE = ChatColor.AQUA + "/home <ign> - Teleport to a player's home location.";
-    private static final String FORCESAVE_LINE = ChatColor.AQUA + "/dsh forcesave - Force a save from the console.";
-    private static final String FORCELOAD_LINE = ChatColor.AQUA + "/dsh forceload - Force a load from the console.";
+    private static final String FORCESAVE_LINE = ChatColor.AQUA + "/dsh forcesave - Write every home to disk now.";
+    private static final String FORCELOAD_LINE = ChatColor.AQUA + "/dsh forceload - Read homes back from disk, undoing any /sethome since the last save.";
 
     private HelpCommand helpCommand;
 
