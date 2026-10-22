@@ -190,6 +190,37 @@ class HomeCommandTest {
         verify(player).sendMessage(org.bukkit.ChatColor.RED + "Your teleport was cancelled because your location changed.");
     }
 
+    @Test
+    void execute_saysSecondsForADelayOtherThanOne() {
+        Player player = homeOwnerWithDelay(3);
+
+        homeCommand.execute(player, new String[0]);
+
+        verify(player).sendMessage(org.bukkit.ChatColor.GREEN + "Teleporting in 3 seconds...");
+    }
+
+    @Test
+    void execute_saysSecondForADelayOfOne() {
+        Player player = homeOwnerWithDelay(1);
+
+        homeCommand.execute(player, new String[0]);
+
+        verify(player).sendMessage(org.bukkit.ChatColor.GREEN + "Teleporting in 1 second...");
+        verify(scheduler).runTaskLater(any(), any(Runnable.class), org.mockito.ArgumentMatchers.eq(20L));
+    }
+
+    private Player homeOwnerWithDelay(int seconds) {
+        Player player = mock(Player.class);
+        when(player.getName()).thenReturn("Steve");
+        when(player.hasPermission("dsh.home")).thenReturn(true);
+        when(configManager.getTeleportDelaySeconds()).thenReturn(seconds);
+
+        World world = mock(World.class);
+        when(player.getLocation()).thenReturn(new Location(world, 1, 2, 3));
+        persistentData.addHomeRecord(recordFor("Steve", new Location(world, 10, 20, 30)));
+        return player;
+    }
+
     private HomeRecord recordFor(String playerName, Location location) {
         HomeRecord record = new HomeRecord();
         record.setPlayerName(playerName);

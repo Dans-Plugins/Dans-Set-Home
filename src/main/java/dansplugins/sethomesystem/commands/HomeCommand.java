@@ -69,7 +69,7 @@ public class HomeCommand {
         }
 
         int seconds = configManager.getTeleportDelaySeconds();
-        player.sendMessage(ChatColor.GREEN + "Teleporting in " + seconds + " seconds...");
+        player.sendMessage(ChatColor.GREEN + "Teleporting in " + seconds + (seconds == 1 ? " second..." : " seconds..."));
 
         Location initialLocation = player.getLocation();
 
