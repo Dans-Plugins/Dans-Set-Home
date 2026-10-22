@@ -47,8 +47,9 @@ public class ConfigManager {
         plugin.saveConfig();
     }
 
+    /** Never negative: a negative value counts as no delay, which is what the scheduler does with it anyway. */
     public int getTeleportDelaySeconds() {
-        return plugin.getConfig().getInt(TELEPORT_DELAY_SECONDS_KEY, DEFAULT_TELEPORT_DELAY_SECONDS);
+        return Math.max(0, plugin.getConfig().getInt(TELEPORT_DELAY_SECONDS_KEY, DEFAULT_TELEPORT_DELAY_SECONDS));
     }
 
     // The one-argument getters, deliberately. saveDefaultConfig() never touches a

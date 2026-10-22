@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Refusals and error replies (`You don't have a home set.`, a missing permission, `/sethome` or `/home` from the console, `/dsh` with no or an unrecognised subcommand) are no longer followed by a bare `/home`, `/sethome` or `/dsh` line. Each of these replies told the server the command had failed, and the server then printed the command's usage, which is just its name
 - Homes now keep the direction the player was facing at `/sethome` after a restart or `/dsh forceload`. Only the position was written to disk, so every home read back from disk faced south and level. Each home file now ends with two more lines, the yaw and the pitch; files written by earlier versions have neither and still load, facing south as before until `/sethome` is run again
 - `/dsh help` now says what `/dsh forcesave` and `/dsh forceload` do instead of "Force a save from the console." and "Force a load from the console.", which read as if the commands could not be used in game
+- A negative `teleport-delay-seconds` now counts as `0`, so `/home` says "Teleporting in 0 seconds..." instead of a negative countdown such as "Teleporting in -5 seconds..."; the teleport already happened on the next tick. With a delay of `1`, `/home` now says "Teleporting in 1 second..." instead of "1 seconds"
 
 ## [1.5.1] – 2026-10-16
 

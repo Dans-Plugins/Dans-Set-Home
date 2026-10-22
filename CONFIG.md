@@ -9,7 +9,7 @@ automatically the first time the plugin starts.
 
 | Key | Default | Description |
 |-----|---------|-------------|
-| `teleport-delay-seconds` | `3` | Number of seconds a player must stand still after running `/home` before being teleported. |
+| `teleport-delay-seconds` | `3` | Number of seconds a player must stand still after running `/home` before being teleported. `0` teleports on the next tick; a negative value counts as `0`. |
 | `usage-reporting.enabled` | `true` | Whether the plugin reports usage events (see below). Set to `false` to turn it off. |
 | `usage-reporting.endpoint` | `https://trace.danielstephenson.dev` | The trace server events are sent to. |
 | `usage-reporting.key` | the plugin's key | Identifies this plugin to the trace server so reports are attributed to it. Not a secret: it ships in the default config and can only report as DansSetHome. Empty means reporting is off regardless of `enabled`. |

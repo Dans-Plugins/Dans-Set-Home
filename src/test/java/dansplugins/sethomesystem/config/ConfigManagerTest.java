@@ -55,6 +55,20 @@ class ConfigManagerTest {
     }
 
     @Test
+    void getTeleportDelaySeconds_treatsANegativeValueAsZero() {
+        when(config.getInt(eq("teleport-delay-seconds"), anyInt())).thenReturn(-5);
+
+        assertEquals(0, configManager.getTeleportDelaySeconds());
+    }
+
+    @Test
+    void getTeleportDelaySeconds_keepsZero() {
+        when(config.getInt(eq("teleport-delay-seconds"), anyInt())).thenReturn(0);
+
+        assertEquals(0, configManager.getTeleportDelaySeconds());
+    }
+
+    @Test
     void usageReporting_readsThroughToTheBundledDefaultsWhenTheFileHasNoBlock() {
         // A server upgraded from before usage reporting has no usage-reporting
         // block in its config.yml. Bukkit's one-argument getters fall through

@@ -1,4 +1,5 @@
 # Number of seconds a player must stand still before /home teleports them.
+# 0 teleports on the next tick; a negative value counts as 0.
 teleport-delay-seconds: 3
 
 # Usage reporting. When the plugin is enabled, and each time one of its
