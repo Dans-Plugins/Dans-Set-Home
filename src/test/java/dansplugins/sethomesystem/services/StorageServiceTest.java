@@ -2,6 +2,7 @@ package dansplugins.sethomesystem.services;
 
 import dansplugins.sethomesystem.data.PersistentData;
 import dansplugins.sethomesystem.objects.HomeRecord;
+import org.bukkit.Location;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -22,7 +23,11 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 class StorageServiceTest {
     private static final String FILENAME_INDEX = "home-record-filenames.txt";
@@ -129,6 +134,52 @@ class StorageServiceTest {
         assertEquals(1, warnings.size());
         assertTrue(warnings.get(0).getMessage().contains(new File(dataFolder, "Steve.txt").getPath()),
                 warnings.get(0).getMessage());
+    }
+
+    @Test
+    void loadHomeRecords_whenAPlayerIsAlreadyInMemory_replacesTheirRecordWithTheSavedOne() throws IOException {
+        // what /dsh forceload does to a player who ran /sethome since the last save: the saved
+        // record wins, and here it has no home, so the home set since is gone rather than kept
+        HomeRecord inMemory = recordFor("Steve");
+        inMemory.setHomeLocation(mock(Location.class));
+        persistentData.addHomeRecord(inMemory);
+        write(dataFolder, FILENAME_INDEX, "Steve.txt\n");
+        write(dataFolder, "Steve.txt", "Steve\n");
+
+        storageService.loadHomeRecords();
+
+        assertEquals(1, persistentData.getHomeRecords().size());
+        HomeRecord loaded = persistentData.getHomeRecords().get(0);
+        assertNotSame(inMemory, loaded);
+        assertNull(loaded.getHomeLocation());
+    }
+
+    @Test
+    void loadHomeRecords_matchesTheInMemoryRecordWhateverTheCaseOfTheName() throws IOException {
+        persistentData.addHomeRecord(recordFor("steve"));
+        write(dataFolder, FILENAME_INDEX, "Steve.txt\n");
+        write(dataFolder, "Steve.txt", "Steve\n");
+
+        storageService.loadHomeRecords();
+
+        assertEquals(1, persistentData.getHomeRecords().size());
+        assertEquals("Steve", persistentData.getHomeRecords().get(0).getPlayerName());
+    }
+
+    @Test
+    void loadHomeRecords_keepsInMemoryRecordsOfPlayersWithNothingOnDisk() throws IOException {
+        HomeRecord inMemory = recordFor("Alex");
+        Location home = mock(Location.class);
+        inMemory.setHomeLocation(home);
+        persistentData.addHomeRecord(inMemory);
+        write(dataFolder, FILENAME_INDEX, "Steve.txt\n");
+        write(dataFolder, "Steve.txt", "Steve\n");
+
+        storageService.loadHomeRecords();
+
+        assertEquals(2, persistentData.getHomeRecords().size());
+        assertTrue(persistentData.getHomeRecords().contains(inMemory));
+        assertSame(home, inMemory.getHomeLocation());
     }
 
     @Test
