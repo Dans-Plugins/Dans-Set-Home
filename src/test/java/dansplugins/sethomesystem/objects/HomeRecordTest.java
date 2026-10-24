@@ -31,6 +31,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class HomeRecordTest {
@@ -39,14 +41,21 @@ class HomeRecordTest {
 
     private MockedStatic<Bukkit> bukkitMock;
     private World world;
+    private Server server;
+    private File worldContainer;
     private RecordingHandler log;
     private Logger logger;
 
     @BeforeEach
     void setUp() {
         world = mock(World.class);
-        Server server = mock(Server.class);
-        when(server.createWorld(any(WorldCreator.class))).thenReturn(world);
+        server = mock(Server.class);
+        when(server.getWorld("world")).thenReturn(world);
+        worldContainer = tempDir.resolve("worlds").toFile();
+        worldContainer.mkdirs();
+        when(server.getWorldContainer()).thenReturn(worldContainer);
+        // what createWorld does for a name with no folder: generate a new world
+        when(server.createWorld(any(WorldCreator.class))).thenReturn(mock(World.class));
         bukkitMock = mockStatic(Bukkit.class);
         bukkitMock.when(Bukkit::getServer).thenReturn(server);
         log = new RecordingHandler();
@@ -120,6 +129,69 @@ class HomeRecordTest {
         assertEquals(135.5f, loaded.getHomeLocation().getYaw());
         assertEquals(-20.0f, loaded.getHomeLocation().getPitch());
         assertEquals(0, log.warnings().size());
+    }
+
+    @Test
+    void load_worldNotLoadedButOnDisk_loadsTheWorld() throws IOException {
+        // a world kept by a world-management plugin that has not loaded it yet still has its folder
+        World unloaded = mock(World.class);
+        new File(worldContainer, "nether_hub").mkdirs();
+        when(server.createWorld(any(WorldCreator.class))).thenReturn(unloaded);
+        HomeRecord record = new HomeRecord();
+
+        record.load(saveFile("Steve.txt", "Steve", "nether_hub", "11.5", "64.0", "-33.25"), logger);
+
+        assertNotNull(record.getHomeLocation());
+        assertEquals(unloaded, record.getHomeLocation().getWorld());
+        assertNull(record.getMissingWorldName());
+        assertEquals(0, log.warnings().size());
+    }
+
+    @Test
+    void load_worldThatDoesNotExist_doesNotCreateItAndWarns() throws IOException {
+        // createWorld would generate a brand new world under the saved name
+        HomeRecord record = new HomeRecord();
+
+        record.load(saveFile("Steve.txt", "Steve", "old_world", "11.5", "64.0", "-33.25"), logger);
+
+        verify(server, never()).createWorld(any(WorldCreator.class));
+        assertEquals("Steve", record.getPlayerName());
+        assertNull(record.getHomeLocation());
+        assertEquals("old_world", record.getMissingWorldName());
+        List<String> warnings = log.warningMessages();
+        assertEquals(1, warnings.size(), warnings.toString());
+        assertTrue(warnings.get(0).contains("Steve"), warnings.get(0));
+        assertTrue(warnings.get(0).contains("old_world"), warnings.get(0));
+    }
+
+    @Test
+    void load_worldThatDoesNotExist_thenSave_keepsTheHomeOnDisk() throws IOException {
+        File saveFolder = tempDir.resolve("DansSetHome").toFile();
+        saveFolder.mkdirs();
+        String original = "Steve\nold_world\n11.5\n64.0\n-33.25\n135.5\n-20.0\n";
+        File saved = new File(saveFolder, "Steve.txt");
+        Files.write(saved.toPath(), original.getBytes(StandardCharsets.UTF_8));
+        HomeRecord record = new HomeRecord();
+        record.load(saved, logger);
+
+        record.save(saveFolder, logger);
+
+        assertEquals(original, new String(Files.readAllBytes(saved.toPath()), StandardCharsets.UTF_8));
+    }
+
+    @Test
+    void setHomeLocation_afterAHomeInAMissingWorld_replacesIt() throws IOException {
+        when(world.getName()).thenReturn("world");
+        File saveFolder = tempDir.resolve("DansSetHome").toFile();
+        HomeRecord record = new HomeRecord();
+        record.load(saveFile("Steve.txt", "Steve", "old_world", "11.5", "64.0", "-33.25"), logger);
+
+        record.setHomeLocation(new Location(world, 1.0, 2.0, 3.0, 4.0f, 5.0f));
+        record.save(saveFolder, logger);
+
+        assertNull(record.getMissingWorldName());
+        assertEquals("Steve\nworld\n1.0\n2.0\n3.0\n4.0\n5.0\n",
+                new String(Files.readAllBytes(new File(saveFolder, "Steve.txt").toPath()), StandardCharsets.UTF_8));
     }
 
     @Test

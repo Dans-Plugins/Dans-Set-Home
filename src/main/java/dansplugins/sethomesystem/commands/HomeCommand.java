@@ -58,6 +58,16 @@ public class HomeCommand {
             record = null;
         }
 
+        if (record != null && record.getHomeLocation() == null && record.getMissingWorldName() != null) {
+            if (player.getName().equalsIgnoreCase(name)) {
+                player.sendMessage(RED + "Your home is in the world " + record.getMissingWorldName() + ", which no longer exists.");
+            }
+            else {
+                player.sendMessage(RED + "That player's home is in the world " + record.getMissingWorldName() + ", which no longer exists.");
+            }
+            return true;
+        }
+
         if (record == null || record.getHomeLocation() == null) {
             if (player.getName().equalsIgnoreCase(name)) {
                 player.sendMessage(RED + "You don't have a home set.");

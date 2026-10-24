@@ -8,6 +8,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,6 +19,9 @@ import static org.bukkit.Bukkit.getServer;
 public class HomeRecord {
     private String playerName = "";
     private Location homeLocation = null;
+    // the saved world name and coordinates of a home whose world could not be found when the record
+    // was loaded, kept so that the home is written back unchanged rather than dropped from disk
+    private List<String> unresolvedHomeLines = null;
 
     public void setPlayerName(String name) {
         playerName = name;
@@ -28,10 +33,19 @@ public class HomeRecord {
 
     public void setHomeLocation(Location location) {
         homeLocation = location;
+        unresolvedHomeLines = null;
     }
 
     public Location getHomeLocation() {
         return homeLocation;
+    }
+
+    /**
+     * The name of the world this record's home is in, when that world did not exist when the
+     * record was loaded; {@code null} otherwise.
+     */
+    public String getMissingWorldName() {
+        return unresolvedHomeLines == null ? null : unresolvedHomeLines.get(0);
     }
 
     /**
@@ -61,6 +75,11 @@ public class HomeRecord {
                 saveWriter.write(homeLocation.getYaw() + "\n");
                 saveWriter.write(homeLocation.getPitch() + "\n");
             }
+            else if (unresolvedHomeLines != null) {
+                for (String line : unresolvedHomeLines) {
+                    saveWriter.write(line + "\n");
+                }
+            }
 
             saveWriter.close();
 
@@ -74,6 +93,10 @@ public class HomeRecord {
      * Reads the record from the given file. A file that cannot be read, or whose home location
      * is malformed, is reported through the given logger at {@link Level#WARNING}; a record with
      * no home location at all is a player who has not run {@code /sethome}, and is not a failure.
+     *
+     * <p>A world that is not loaded is only loaded if its folder exists in the world container,
+     * because {@code createWorld} would otherwise generate a new world under the saved name. A home
+     * in a world that does not exist is not loaded, but is kept, and written back by {@link #save}.
      */
     public void load(File loadFile, Logger logger) {
         try {
@@ -84,7 +107,8 @@ public class HomeRecord {
                 setPlayerName(loadReader.nextLine());
             }
 
-            World world = null;
+            String worldName = null;
+            List<String> homeLines = new ArrayList<>();
             Double x = null;
             Double y = null;
             Double z = null;
@@ -95,30 +119,39 @@ public class HomeRecord {
 
             try {
                 if (loadReader.hasNextLine()) {
-                    world = getServer().createWorld(new WorldCreator(loadReader.nextLine()));
+                    worldName = readLine(loadReader, homeLines);
                 }
                 if (loadReader.hasNextLine()) {
-                    x = Double.parseDouble(loadReader.nextLine());
+                    x = Double.parseDouble(readLine(loadReader, homeLines));
                 }
                 if (loadReader.hasNextLine()) {
-                    y = Double.parseDouble(loadReader.nextLine());
+                    y = Double.parseDouble(readLine(loadReader, homeLines));
                 }
                 if (loadReader.hasNextLine()) {
-                    z = Double.parseDouble(loadReader.nextLine());
+                    z = Double.parseDouble(readLine(loadReader, homeLines));
                 }
                 if (loadReader.hasNextLine()) {
-                    yaw = Float.parseFloat(loadReader.nextLine());
+                    yaw = Float.parseFloat(readLine(loadReader, homeLines));
                 }
                 if (loadReader.hasNextLine()) {
-                    pitch = Float.parseFloat(loadReader.nextLine());
+                    pitch = Float.parseFloat(readLine(loadReader, homeLines));
                 }
 
                 // set location - each coordinate is tracked by whether it was read at all, so that
                 // a legitimately saved 0 is not mistaken for a missing value
-                if (world != null && x != null && y != null && z != null) {
-                    homeLocation = new Location(world, x, y, z, yaw, pitch);
+                if (worldName != null && x != null && y != null && z != null) {
+                    World world = findWorld(worldName);
+                    if (world != null) {
+                        homeLocation = new Location(world, x, y, z, yaw, pitch);
+                    }
+                    else {
+                        unresolvedHomeLines = homeLines;
+                        logger.warning("The home of " + playerName + " in " + loadFile.getPath() + " is in the world "
+                                + worldName + ", which does not exist. The home was not loaded, and is kept on disk"
+                                + " until " + playerName + " sets a new one.");
+                    }
                 }
-                else if (world != null) {
+                else if (worldName != null) {
                     // a world line with no complete set of coordinates after it is a truncated
                     // record, not a player without a home
                     logger.warning("The home record of " + playerName + " in " + loadFile.getPath()
@@ -136,5 +169,19 @@ public class HomeRecord {
             logger.log(Level.WARNING, "Could not read the home record " + loadFile.getPath()
                     + ". The home of " + playerName + " was not loaded.", e);
         }
+    }
+
+    private static String readLine(Scanner reader, List<String> lines) {
+        String line = reader.nextLine();
+        lines.add(line);
+        return line;
+    }
+
+    private static World findWorld(String name) {
+        World world = getServer().getWorld(name);
+        if (world == null && new File(getServer().getWorldContainer(), name).isDirectory()) {
+            world = getServer().createWorld(new WorldCreator(name));
+        }
+        return world;
     }
 }
