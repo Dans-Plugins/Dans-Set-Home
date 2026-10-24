@@ -25,12 +25,17 @@ the length of the delay with the `teleport-delay-seconds` option described in
 
 Each player has one home. Running `/sethome` again replaces it with your current location.
 
+If the world your home is in has been deleted from the server, `/home` tells you that the world
+no longer exists instead of teleporting you. The home is kept until you run `/sethome` again, so
+it works again if the world is restored.
+
 ## Visiting Other Players' Homes
 
 Players with the `dsh.home.others` permission (operators by default) can run `/home <player>`
 to teleport to that player's home. The name is not case-sensitive, and the same delay and
 stand-still rule apply. Without the permission, `/home` followed by any name is refused, even your
-own name. If the player has never set a home, you are told that they don't have one.
+own name. If the player has never set a home, you are told that they don't have one, and if their
+home is in a world that no longer exists, you are told that instead.
 
 ## Commands
 

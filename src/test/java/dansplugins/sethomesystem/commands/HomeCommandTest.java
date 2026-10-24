@@ -8,14 +8,23 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
+import org.bukkit.WorldCreator;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -27,12 +36,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class HomeCommandTest {
+    @TempDir
+    Path tempDir;
+
     private PersistentData persistentData;
     private MedievalSetHome medievalSetHome;
     private ConfigManager configManager;
     private HomeCommand homeCommand;
     private MockedStatic<Bukkit> bukkitMock;
     private BukkitScheduler scheduler;
+    private Server server;
 
     @BeforeEach
     void setUp() {
@@ -41,7 +54,7 @@ class HomeCommandTest {
         configManager = mock(ConfigManager.class);
         homeCommand = new HomeCommand(persistentData, medievalSetHome, configManager);
 
-        Server server = mock(Server.class);
+        server = mock(Server.class);
         scheduler = mock(BukkitScheduler.class);
         when(server.getScheduler()).thenReturn(scheduler);
         bukkitMock = mockStatic(Bukkit.class);
@@ -142,6 +155,35 @@ class HomeCommandTest {
     }
 
     @Test
+    void execute_selfHomeInMissingWorld_saysTheWorldNoLongerExists() throws IOException {
+        Player player = mock(Player.class);
+        when(player.getName()).thenReturn("Steve");
+        when(player.hasPermission("dsh.home")).thenReturn(true);
+        persistentData.addHomeRecord(recordInMissingWorld("Steve", "old_world"));
+
+        boolean result = homeCommand.execute(player, new String[0]);
+
+        assertTrue(result);
+        verify(player).sendMessage(org.bukkit.ChatColor.RED + "Your home is in the world old_world, which no longer exists.");
+        verify(scheduler, never()).runTaskLater(any(), any(Runnable.class), anyLong());
+    }
+
+    @Test
+    void execute_othersHomeInMissingWorld_saysTheWorldNoLongerExists() throws IOException {
+        Player player = mock(Player.class);
+        when(player.getName()).thenReturn("Steve");
+        when(player.hasPermission("dsh.home")).thenReturn(true);
+        when(player.hasPermission("dsh.home.others")).thenReturn(true);
+        persistentData.addHomeRecord(recordInMissingWorld("Alex", "old_world"));
+
+        boolean result = homeCommand.execute(player, new String[]{"Alex"});
+
+        assertTrue(result);
+        verify(player).sendMessage(org.bukkit.ChatColor.RED + "That player's home is in the world old_world, which no longer exists.");
+        verify(scheduler, never()).runTaskLater(any(), any(Runnable.class), anyLong());
+    }
+
+    @Test
     void execute_successfulTeleport_whenLocationUnchanged() {
         Player player = mock(Player.class);
         when(player.getName()).thenReturn("Steve");
@@ -225,6 +267,20 @@ class HomeCommandTest {
         HomeRecord record = new HomeRecord();
         record.setPlayerName(playerName);
         record.setHomeLocation(location);
+        return record;
+    }
+
+    private HomeRecord recordInMissingWorld(String playerName, String worldName) throws IOException {
+        // an empty world container: the world is neither loaded nor on disk
+        File worldContainer = tempDir.resolve("worlds").toFile();
+        worldContainer.mkdirs();
+        when(server.getWorldContainer()).thenReturn(worldContainer);
+        // what createWorld does for a name with no folder: generate a new world
+        when(server.createWorld(any(WorldCreator.class))).thenReturn(mock(World.class));
+        Path file = tempDir.resolve(playerName + ".txt");
+        Files.write(file, (playerName + "\n" + worldName + "\n1.0\n2.0\n3.0\n").getBytes(StandardCharsets.UTF_8));
+        HomeRecord record = new HomeRecord();
+        record.load(file.toFile(), Logger.getLogger("HomeCommandTest"));
         return record;
     }
 }
