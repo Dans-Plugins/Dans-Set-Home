@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- The vendored trace client is now 0.7.0, which combines repeated usage events. The first use of a command is still sent at once, but further uses of the same command within the following minute are only counted, then sent as one event carrying the tag `coalesced` with the count; any counts still open are sent when the plugin is disabled. `startup` events are never combined. Nothing else is added to what is sent
+
+## [1.6.0] – 2026-10-28
+
 ### Fixed
 
 - `/home <player>` without the `dsh.home.others` permission now replies "You don't have permission to teleport to other players' homes." instead of "Only operators can teleport to other players' homes.", which was wrong whenever a permissions plugin granted the node to a non-operator or revoked it from an operator
