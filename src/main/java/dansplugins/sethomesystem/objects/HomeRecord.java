@@ -112,7 +112,7 @@ public class HomeRecord {
             Double x = null;
             Double y = null;
             Double z = null;
-            // the facing direction was not saved before 1.5.2, so a file without it still loads,
+            // the facing direction was not saved before 1.6.0, so a file without it still loads,
             // facing the way new Location(world, x, y, z) does
             float yaw = 0;
             float pitch = 0;
