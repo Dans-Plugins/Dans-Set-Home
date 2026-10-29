@@ -51,15 +51,11 @@ Issues are grouped into [milestones](https://github.com/Dans-Plugins/Dans-Set-Ho
 
 Run the build with:
 
-Linux / macOS:
-
     mvn clean package
 
-Windows:
+The build also runs the unit tests in `src/test/java` (JUnit 5 with Mockito); a failing test fails the build. To run only the tests, use `mvn test`.
 
-    mvn clean package
-
-For manual testing, place the built JAR from `target/` into a local Spigot server's `plugins` folder and restart the server.
+For manual testing, place `target/Dans-Set-Home-<version>.jar` (the JAR a release ships, not the `original-` JAR beside it) into a local Spigot server's `plugins` folder and restart the server.
 
 ## Questions
 
