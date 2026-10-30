@@ -21,8 +21,8 @@ This plugin is supported on the Minecraft versions listed in [`minecraft-version
 
 ## Usage reporting
 
-Usage reporting is on by default: when the plugin is enabled, and each time one of its commands is
-used, it sends its name, its version and the command's name (`startup` and `command` events) to
+Usage reporting is on by default: when the plugin is enabled, and each time a player uses one of its
+commands, it sends its name, its version and the command's name (`startup` and `command` events) to
 https://trace.danielstephenson.dev so it is known which plugins are actually in use. Nothing about
 players, worlds, IPs, or anything typed after a command is sent. Repeats of the same command within
 a minute are counted and sent as one event carrying the count (the `coalesced` tag) instead of one
