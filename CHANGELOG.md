@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.7.1] – 2026-10-31
+
+### Changed
+
+- The usage-reporting comment in the default `config.yml` now says an event is sent each time a player uses one of the plugin's commands, instead of each time one of its commands is used. Since 1.7.0, console, command-block and plugin-dispatched commands are not reported, and the comment now matches. Nothing changes in what is sent, and a `config.yml` already on disk keeps its old comment
+
 ## [1.7.0] – 2026-10-30
 
 ### Changed
