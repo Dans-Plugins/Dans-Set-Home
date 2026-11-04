@@ -288,6 +288,44 @@ class HomeRecordTest {
     }
 
     @Test
+    void save_afterTheWorldOfASetHomeIsUnloaded_keepsTheHome() throws IOException {
+        when(world.getName()).thenReturn("world");
+        Location home = mock(Location.class);
+        when(home.getWorld()).thenReturn(world);
+        when(home.getX()).thenReturn(1.0);
+        when(home.getY()).thenReturn(2.0);
+        when(home.getZ()).thenReturn(3.0);
+        HomeRecord record = new HomeRecord();
+        record.setPlayerName("Steve");
+        record.setHomeLocation(home);
+        // what a Location does once its world has been unloaded
+        when(home.getWorld()).thenThrow(new IllegalArgumentException("World unloaded"));
+        File saveFolder = tempDir.resolve("DansSetHome").toFile();
+
+        record.save(saveFolder, logger);
+
+        assertEquals("Steve\nworld\n1.0\n2.0\n3.0\n0.0\n0.0\n",
+                new String(Files.readAllBytes(new File(saveFolder, "Steve.txt").toPath()), StandardCharsets.UTF_8));
+    }
+
+    @Test
+    void save_afterTheWorldOfALoadedHomeIsUnloaded_keepsTheHome() throws IOException {
+        File saveFolder = tempDir.resolve("DansSetHome").toFile();
+        saveFolder.mkdirs();
+        String original = "Steve\nworld\n11.5\n64.0\n-33.25\n135.5\n-20.0\n";
+        File saved = new File(saveFolder, "Steve.txt");
+        Files.write(saved.toPath(), original.getBytes(StandardCharsets.UTF_8));
+        HomeRecord record = new HomeRecord();
+        record.load(saved, logger);
+        // stands in for the unloaded world: save must not need anything from it
+        when(world.getName()).thenThrow(new IllegalArgumentException("World unloaded"));
+
+        record.save(saveFolder, logger);
+
+        assertEquals(original, new String(Files.readAllBytes(saved.toPath()), StandardCharsets.UTF_8));
+    }
+
+    @Test
     void save_whenTheFolderCannotBeCreated_warnsForThePlayer() throws IOException {
         HomeRecord record = new HomeRecord();
         record.setPlayerName("Steve");
