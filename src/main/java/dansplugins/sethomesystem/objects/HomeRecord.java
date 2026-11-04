@@ -19,6 +19,9 @@ import static org.bukkit.Bukkit.getServer;
 public class HomeRecord {
     private String playerName = "";
     private Location homeLocation = null;
+    // the name of the home's world, kept so that saving does not have to ask homeLocation for its
+    // world, which is not safe once that world has been unloaded
+    private String homeWorldName = null;
     // the saved world name and coordinates of a home whose world could not be found when the record
     // was loaded, kept so that the home is written back unchanged rather than dropped from disk
     private List<String> unresolvedHomeLines = null;
@@ -33,6 +36,8 @@ public class HomeRecord {
 
     public void setHomeLocation(Location location) {
         homeLocation = location;
+        World world = location == null ? null : location.getWorld();
+        homeWorldName = world == null ? null : world.getName();
         unresolvedHomeLines = null;
     }
 
@@ -68,7 +73,7 @@ public class HomeRecord {
             saveWriter.write(playerName + "\n");
 
             if (homeLocation != null) {
-                saveWriter.write(homeLocation.getWorld().getName() + "\n");
+                saveWriter.write(homeWorldName + "\n");
                 saveWriter.write(homeLocation.getX() + "\n");
                 saveWriter.write(homeLocation.getY() + "\n");
                 saveWriter.write(homeLocation.getZ() + "\n");
@@ -143,6 +148,7 @@ public class HomeRecord {
                     World world = findWorld(worldName);
                     if (world != null) {
                         homeLocation = new Location(world, x, y, z, yaw, pitch);
+                        homeWorldName = worldName;
                     }
                     else {
                         unresolvedHomeLines = homeLines;
