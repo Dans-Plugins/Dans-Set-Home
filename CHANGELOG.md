@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.8.0] – 2026-11-05
+
 ### Fixed
 
 - Saving no longer depends on a home's world still being loaded. The world's name was read from the home's location at the moment of saving, after the player's file had already been emptied, so a failure there lost that home and stopped the save before any later player's home was written. This could affect a world unloaded while the server was running. The name is now kept with the home when it is set or loaded, and is what gets written
