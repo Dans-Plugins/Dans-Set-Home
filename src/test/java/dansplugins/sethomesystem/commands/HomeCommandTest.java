@@ -184,6 +184,24 @@ class HomeCommandTest {
     }
 
     @Test
+    void execute_selfHomeInAMalformedFile_saysNoHomeIsSetRatherThanTheWorldIsGone() throws IOException {
+        Player player = mock(Player.class);
+        when(player.getName()).thenReturn("Steve");
+        when(player.hasPermission("dsh.home")).thenReturn(true);
+        Path file = tempDir.resolve("Steve.txt");
+        Files.write(file, "Steve\nworld\n1.0\nnot-a-number\n3.0\n".getBytes(StandardCharsets.UTF_8));
+        HomeRecord record = new HomeRecord();
+        record.load(file.toFile(), Logger.getLogger("HomeCommandTest"));
+        persistentData.addHomeRecord(record);
+
+        boolean result = homeCommand.execute(player, new String[0]);
+
+        assertTrue(result);
+        verify(player).sendMessage(org.bukkit.ChatColor.RED + "You don't have a home set.");
+        verify(scheduler, never()).runTaskLater(any(), any(Runnable.class), anyLong());
+    }
+
+    @Test
     void execute_successfulTeleport_whenLocationUnchanged() {
         Player player = mock(Player.class);
         when(player.getName()).thenReturn("Steve");
