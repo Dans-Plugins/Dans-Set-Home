@@ -147,8 +147,15 @@ public class StorageService {
             while (loadReader.hasNextLine()) {
                 String nextName = loadReader.nextLine();
                 HomeRecord temp = new HomeRecord();
-                temp.setPlayerName(nextName);
+                // the name the file provides is not available if the file cannot be read, and the
+                // name is what puts this line back in the index on the next save
+                temp.setPlayerName(playerNameOf(nextName));
                 temp.load(new File(dataFolder, nextName), logger); // provides owner field among other things
+
+                // a file that could not be read says nothing about a record already in memory
+                if (temp.isFileUnreadable() && persistentData.hasHomeRecord(temp.getPlayerName())) {
+                    continue;
+                }
 
                 // existence check
                 boolean exists = false;
@@ -167,5 +174,9 @@ public class StorageService {
             logger.log(Level.WARNING, "Could not read the home record index " + loadFile.getPath()
                     + ". No homes were loaded.", e);
         }
+    }
+
+    private static String playerNameOf(String filename) {
+        return filename.endsWith(".txt") ? filename.substring(0, filename.length() - ".txt".length()) : filename;
     }
 }

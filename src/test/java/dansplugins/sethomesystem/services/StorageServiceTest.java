@@ -13,6 +13,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -134,6 +136,81 @@ class StorageServiceTest {
         assertEquals(1, warnings.size());
         assertTrue(warnings.get(0).getMessage().contains(new File(dataFolder, "Steve.txt").getPath()),
                 warnings.get(0).getMessage());
+    }
+
+    @Test
+    void loadHomeRecords_whenAnIndexedRecordFileIsMissing_namesThePlayerNotTheFile() throws IOException {
+        write(dataFolder, FILENAME_INDEX, "Steve.txt\n");
+
+        storageService.loadHomeRecords();
+
+        assertEquals("Steve", persistentData.getHomeRecords().get(0).getPlayerName());
+        assertTrue(log.warnings().get(0).getMessage().contains("The home of Steve "),
+                log.warnings().get(0).getMessage());
+    }
+
+    @Test
+    void save_afterAnIndexedRecordFileIsMissing_leavesTheIndexAndTheDataFolderAlone() throws IOException {
+        write(dataFolder, FILENAME_INDEX, "Steve.txt\n");
+
+        storageService.loadHomeRecords();
+        storageService.saveHomeRecordFileNames();
+        storageService.saveHomeRecords();
+
+        assertEquals("Steve.txt\n", contentsOf(new File(dataFolder, FILENAME_INDEX)));
+        assertEquals(Collections.singletonList(FILENAME_INDEX), filesIn(dataFolder));
+    }
+
+    @Test
+    void save_afterAnIndexedRecordFileCannotBeOpened_findsTheHomeOnceItCan() throws IOException {
+        // a folder in the file's place stands in for a file that exists but cannot be opened
+        File recordFile = new File(dataFolder, "Steve.txt");
+        Files.createDirectories(recordFile.toPath());
+        write(dataFolder, FILENAME_INDEX, "Steve.txt\n");
+
+        storageService.loadHomeRecords();
+        storageService.saveHomeRecordFileNames();
+        storageService.saveHomeRecords();
+
+        assertTrue(recordFile.isDirectory());
+        Files.delete(recordFile.toPath());
+        write(dataFolder, "Steve.txt", "Steve\n");
+        persistentData.getHomeRecords().clear();
+        storageService.loadHomeRecords();
+        assertEquals(1, persistentData.getHomeRecords().size());
+        assertEquals("Steve", persistentData.getHomeRecords().get(0).getPlayerName());
+        assertFalse(persistentData.getHomeRecords().get(0).isFileUnreadable());
+    }
+
+    @Test
+    void save_afterAnEmptyRecordFile_keepsThePlayerName() throws IOException {
+        // an empty file opens, but has no first line to take the player's name from
+        write(dataFolder, FILENAME_INDEX, "Steve.txt\n");
+        write(dataFolder, "Steve.txt", "");
+
+        storageService.loadHomeRecords();
+        storageService.saveHomeRecordFileNames();
+        storageService.saveHomeRecords();
+
+        assertEquals("Steve.txt\n", contentsOf(new File(dataFolder, FILENAME_INDEX)));
+        assertEquals("Steve\n", contentsOf(new File(dataFolder, "Steve.txt")));
+        assertEquals(Arrays.asList("Steve.txt", FILENAME_INDEX), filesIn(dataFolder));
+    }
+
+    @Test
+    void loadHomeRecords_whenARecordFileCannotBeRead_keepsTheRecordAlreadyInMemory() throws IOException {
+        // /dsh forceload while one file is unreadable must not take a live home away from its player
+        HomeRecord inMemory = recordFor("Steve");
+        Location home = mock(Location.class);
+        inMemory.setHomeLocation(home);
+        persistentData.addHomeRecord(inMemory);
+        write(dataFolder, FILENAME_INDEX, "Steve.txt\n");
+
+        storageService.loadHomeRecords();
+
+        assertEquals(1, persistentData.getHomeRecords().size());
+        assertSame(inMemory, persistentData.getHomeRecords().get(0));
+        assertSame(home, inMemory.getHomeLocation());
     }
 
     @Test
@@ -286,6 +363,13 @@ class StorageServiceTest {
     private void write(File folder, String filename, String contents) throws IOException {
         Files.createDirectories(folder.toPath());
         Files.write(new File(folder, filename).toPath(), contents.getBytes(StandardCharsets.UTF_8));
+    }
+
+    private List<String> filesIn(File folder) {
+        String[] names = folder.list();
+        assertNotNull(names);
+        Arrays.sort(names);
+        return Arrays.asList(names);
     }
 
     private String contentsOf(File file) {

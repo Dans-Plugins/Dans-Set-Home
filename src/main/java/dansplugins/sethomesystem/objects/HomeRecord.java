@@ -22,9 +22,14 @@ public class HomeRecord {
     // the name of the home's world, kept so that saving does not have to ask homeLocation for its
     // world, which is not safe once that world has been unloaded
     private String homeWorldName = null;
-    // the saved world name and coordinates of a home whose world could not be found when the record
-    // was loaded, kept so that the home is written back unchanged rather than dropped from disk
+    // the saved lines of a home that could not be turned into a location when the record was
+    // loaded, kept so that the home is written back unchanged rather than dropped from disk
     private List<String> unresolvedHomeLines = null;
+    // the world named by unresolvedHomeLines, when the world is why they could not be resolved
+    private String missingWorldName = null;
+    // whether the file this record was loaded from could not be read, in which case nothing is
+    // known about what the file holds, and saving would overwrite it
+    private boolean fileUnreadable = false;
 
     public void setPlayerName(String name) {
         playerName = name;
@@ -39,6 +44,8 @@ public class HomeRecord {
         World world = location == null ? null : location.getWorld();
         homeWorldName = world == null ? null : world.getName();
         unresolvedHomeLines = null;
+        missingWorldName = null;
+        fileUnreadable = false;
     }
 
     public Location getHomeLocation() {
@@ -50,16 +57,27 @@ public class HomeRecord {
      * record was loaded; {@code null} otherwise.
      */
     public String getMissingWorldName() {
-        return unresolvedHomeLines == null ? null : unresolvedHomeLines.get(0);
+        return missingWorldName;
     }
 
     /**
-     * Writes the record to {@code <playerName>.txt} in the given folder. A record that cannot be
-     * written is reported through the given logger at {@link Level#WARNING}, since the player
-     * would otherwise find their home missing after the next restart with nothing in the log
-     * to say why.
+     * Whether the last {@link #load} could not read its file. Such a record is not written by
+     * {@link #save} until a new home is set, so that the file is still there once it can be read.
+     */
+    public boolean isFileUnreadable() {
+        return fileUnreadable;
+    }
+
+    /**
+     * Writes the record to {@code <playerName>.txt} in the given folder, unless the record's file
+     * could not be read when it was loaded. A record that cannot be written is reported through
+     * the given logger at {@link Level#WARNING}, since the player would otherwise find their home
+     * missing after the next restart with nothing in the log to say why.
      */
     public void save(File saveFolder, Logger logger) {
+        if (fileUnreadable) {
+            return;
+        }
         try {
             if (!saveFolder.exists()) {
                 saveFolder.mkdirs();
@@ -101,7 +119,8 @@ public class HomeRecord {
      *
      * <p>A world that is not loaded is only loaded if its folder exists in the world container,
      * because {@code createWorld} would otherwise generate a new world under the saved name. A home
-     * in a world that does not exist is not loaded, but is kept, and written back by {@link #save}.
+     * that is malformed, or in a world that does not exist, is not loaded, but is kept, and written
+     * back by {@link #save}. A file that cannot be read is left as it is, see {@link #isFileUnreadable}.
      */
     public void load(File loadFile, Logger logger) {
         try {
@@ -152,6 +171,7 @@ public class HomeRecord {
                     }
                     else {
                         unresolvedHomeLines = homeLines;
+                        missingWorldName = worldName;
                         logger.warning("The home of " + playerName + " in " + loadFile.getPath() + " is in the world "
                                 + worldName + ", which does not exist. The home was not loaded, and is kept on disk"
                                 + " until " + playerName + " sets a new one.");
@@ -160,20 +180,30 @@ public class HomeRecord {
                 else if (worldName != null) {
                     // a world line with no complete set of coordinates after it is a truncated
                     // record, not a player without a home
+                    unresolvedHomeLines = homeLines;
                     logger.warning("The home record of " + playerName + " in " + loadFile.getPath()
-                            + " is missing one or more coordinates. The home was not loaded.");
+                            + " is missing one or more coordinates. The home was not loaded, and is kept"
+                            + " on disk until " + playerName + " sets a new one.");
                 }
 
             }
             catch(Exception e) {
+                // the lines after the bad one are kept along with those before it
+                while (loadReader.hasNextLine()) {
+                    readLine(loadReader, homeLines);
+                }
+                unresolvedHomeLines = homeLines;
                 logger.log(Level.WARNING, "The home record of " + playerName + " in " + loadFile.getPath()
-                        + " could not be read as a home location. The home was not loaded.", e);
+                        + " could not be read as a home location. The home was not loaded, and is kept on"
+                        + " disk until " + playerName + " sets a new one.", e);
             }
 
             loadReader.close();
         } catch (FileNotFoundException e) {
+            fileUnreadable = true;
             logger.log(Level.WARNING, "Could not read the home record " + loadFile.getPath()
-                    + ". The home of " + playerName + " was not loaded.", e);
+                    + ". The home of " + playerName + " was not loaded, and the file is left as it is until it"
+                    + " can be read or " + playerName + " sets a new home.", e);
         }
     }
 

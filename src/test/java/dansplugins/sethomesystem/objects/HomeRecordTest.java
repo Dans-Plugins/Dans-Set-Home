@@ -25,6 +25,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -256,6 +257,138 @@ class HomeRecordTest {
         assertEquals(1, warnings.size());
         assertTrue(warnings.get(0).getMessage().contains("Steve"), warnings.get(0).getMessage());
         assertTrue(warnings.get(0).getThrown() instanceof NumberFormatException);
+    }
+
+    @Test
+    void load_malformedCoordinate_thenSave_keepsEveryLineOnDisk() throws IOException {
+        // the bad line is not the last one, so the lines after it have to survive as well
+        File saveFolder = tempDir.resolve("DansSetHome").toFile();
+        saveFolder.mkdirs();
+        String original = "Steve\nworld\n1.0\nnot-a-number\n3.0\n135.5\n-20.0\n";
+        File saved = new File(saveFolder, "Steve.txt");
+        Files.write(saved.toPath(), original.getBytes(StandardCharsets.UTF_8));
+        HomeRecord record = new HomeRecord();
+        record.load(saved, logger);
+
+        record.save(saveFolder, logger);
+
+        assertEquals(original, new String(Files.readAllBytes(saved.toPath()), StandardCharsets.UTF_8));
+    }
+
+    @Test
+    void load_malformedFacingDirection_thenSave_keepsEveryLineOnDisk() throws IOException {
+        File saveFolder = tempDir.resolve("DansSetHome").toFile();
+        saveFolder.mkdirs();
+        String original = "Steve\nworld\n1.0\n2.0\n3.0\nnot-a-number\n-20.0\n";
+        File saved = new File(saveFolder, "Steve.txt");
+        Files.write(saved.toPath(), original.getBytes(StandardCharsets.UTF_8));
+        HomeRecord record = new HomeRecord();
+        record.load(saved, logger);
+
+        record.save(saveFolder, logger);
+
+        assertEquals(original, new String(Files.readAllBytes(saved.toPath()), StandardCharsets.UTF_8));
+    }
+
+    @Test
+    void load_missingCoordinateLines_thenSave_keepsEveryLineOnDisk() throws IOException {
+        File saveFolder = tempDir.resolve("DansSetHome").toFile();
+        saveFolder.mkdirs();
+        String original = "Steve\nworld\n11.5\n";
+        File saved = new File(saveFolder, "Steve.txt");
+        Files.write(saved.toPath(), original.getBytes(StandardCharsets.UTF_8));
+        HomeRecord record = new HomeRecord();
+        record.load(saved, logger);
+
+        record.save(saveFolder, logger);
+
+        assertEquals(original, new String(Files.readAllBytes(saved.toPath()), StandardCharsets.UTF_8));
+    }
+
+    @Test
+    void load_malformedRecord_isNotReportedAsAMissingWorld() throws IOException {
+        // /home would otherwise tell the player that a world called "world" no longer exists
+        HomeRecord malformed = new HomeRecord();
+        malformed.load(saveFile("Steve.txt", "Steve", "world", "eleven", "64.0", "-33.25"), logger);
+        HomeRecord truncated = new HomeRecord();
+        truncated.load(saveFile("Alex.txt", "Alex", "world", "11.5"), logger);
+
+        assertNull(malformed.getMissingWorldName());
+        assertNull(truncated.getMissingWorldName());
+    }
+
+    @Test
+    void load_malformedRecord_warningSaysTheHomeIsKept() throws IOException {
+        HomeRecord malformed = new HomeRecord();
+        malformed.load(saveFile("Steve.txt", "Steve", "world", "eleven", "64.0", "-33.25"), logger);
+        HomeRecord truncated = new HomeRecord();
+        truncated.load(saveFile("Alex.txt", "Alex", "world", "11.5"), logger);
+
+        List<String> warnings = log.warningMessages();
+        assertEquals(2, warnings.size(), warnings.toString());
+        assertTrue(warnings.get(0).contains("kept on disk"), warnings.get(0));
+        assertTrue(warnings.get(1).contains("kept on disk"), warnings.get(1));
+    }
+
+    @Test
+    void setHomeLocation_afterAMalformedRecord_replacesIt() throws IOException {
+        when(world.getName()).thenReturn("world");
+        File saveFolder = tempDir.resolve("DansSetHome").toFile();
+        HomeRecord record = new HomeRecord();
+        record.load(saveFile("Steve.txt", "Steve", "world", "eleven", "64.0", "-33.25"), logger);
+
+        record.setHomeLocation(new Location(world, 1.0, 2.0, 3.0, 4.0f, 5.0f));
+        record.save(saveFolder, logger);
+
+        assertEquals("Steve\nworld\n1.0\n2.0\n3.0\n4.0\n5.0\n",
+                new String(Files.readAllBytes(new File(saveFolder, "Steve.txt").toPath()), StandardCharsets.UTF_8));
+    }
+
+    @Test
+    void load_unreadableFile_thenSave_leavesTheFileAlone() throws IOException {
+        // a folder in the file's place is what a file that exists but cannot be opened looks like
+        // to the load, whichever user the tests run as
+        File saveFolder = tempDir.resolve("DansSetHome").toFile();
+        File unreadable = new File(saveFolder, "Steve.txt");
+        unreadable.mkdirs();
+        HomeRecord record = new HomeRecord();
+        record.setPlayerName("Steve");
+        record.load(unreadable, logger);
+
+        record.save(saveFolder, logger);
+
+        assertTrue(record.isFileUnreadable());
+        assertTrue(unreadable.isDirectory());
+        assertEquals(1, log.warnings().size());
+    }
+
+    @Test
+    void load_missingFile_thenSave_writesNothing() {
+        File saveFolder = tempDir.resolve("DansSetHome").toFile();
+        File missing = new File(saveFolder, "Steve.txt");
+        HomeRecord record = new HomeRecord();
+        record.setPlayerName("Steve");
+        record.load(missing, logger);
+
+        record.save(saveFolder, logger);
+
+        assertFalse(missing.exists());
+    }
+
+    @Test
+    void setHomeLocation_afterAnUnreadableFile_savesTheNewHome() throws IOException {
+        when(world.getName()).thenReturn("world");
+        File saveFolder = tempDir.resolve("DansSetHome").toFile();
+        HomeRecord record = new HomeRecord();
+        record.setPlayerName("Steve");
+        record.load(new File(saveFolder, "Steve.txt"), logger);
+
+        record.setHomeLocation(new Location(world, 1.0, 2.0, 3.0, 4.0f, 5.0f));
+        record.save(saveFolder, logger);
+
+        assertFalse(record.isFileUnreadable());
+        assertEquals("Steve\nworld\n1.0\n2.0\n3.0\n4.0\n5.0\n",
+                new String(Files.readAllBytes(new File(saveFolder, "Steve.txt").toPath()), StandardCharsets.UTF_8));
     }
 
     @Test

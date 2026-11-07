@@ -3,9 +3,11 @@
 Dans Set Home creates a `config.yml` in `plugins/DansSetHome/` on first run. Saved homes are kept in
 the same folder: one `<player>.txt` file per player, listed in `home-record-filenames.txt`. Homes are
 written to disk when the server stops (or the plugin is disabled) and when `/dsh forcesave` is run,
-not each time `/sethome` is used, so a crash loses homes set since the last save. Servers upgrading
-from a version that stored homes in `plugins/Medieval-Set-Home/` have those files moved across
-automatically the first time the plugin starts.
+not each time `/sethome` is used, so a crash loses homes set since the last save. A home file that
+cannot be read or parsed is reported in the server log and not loaded, but is kept: it can be repaired
+by hand and picked up on the next start or `/dsh forceload`, until the player runs `/sethome`, which
+replaces it. Servers upgrading from a version that stored homes in `plugins/Medieval-Set-Home/` have
+those files moved across automatically the first time the plugin starts.
 
 | Key | Default | Description |
 |-----|---------|-------------|

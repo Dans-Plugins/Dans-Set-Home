@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- A home file with a line that cannot be parsed, or with coordinates missing, no longer loses its saved lines on the next save. Only the player's name was written back, so the next `/dsh forcesave` or server stop erased a home an administrator could have repaired by hand. The lines are now written back unchanged until the file is repaired or the player runs `/sethome`, and the warning says so. `/home` still replies "You don't have a home set." for such a home
+- A home file that cannot be read no longer turns its player's record into `<player>.txt.txt` on the next save, which took the real file out of `home-record-filenames.txt` for good. The file is now left as it is and stays in the index, so the home is found again on the next start or `/dsh forceload` once the file can be read. `/dsh forceload` also no longer adds a second record for a player already in memory when their file cannot be read, and keeps that player's current home. If the player runs `/sethome` in the meantime, the new home replaces the file
+- A home file that is empty no longer turns its player's record into `<player>.txt.txt` on the next save, for the same reason
+
 ## [1.8.0] – 2026-11-05
 
 ### Fixed
