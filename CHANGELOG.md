@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.9.0] – 2026-11-08
+
 ### Fixed
 
 - A home file with a line that cannot be parsed, or with coordinates missing, no longer loses its saved lines on the next save. Only the player's name was written back, so the next `/dsh forcesave` or server stop erased a home an administrator could have repaired by hand. The lines are now written back unchanged until the file is repaired or the player runs `/sethome`, and the warning says so. `/home` still replies "You don't have a home set." for such a home
