@@ -18,7 +18,7 @@ public class HelpCommand {
         sender.sendMessage(ChatColor.AQUA + "/sethome - Set your home location.");
         sender.sendMessage(ChatColor.AQUA + "/home - Teleport to your home location.");
         if (sender.hasPermission("dsh.home.others")) {
-            sender.sendMessage(ChatColor.AQUA + "/home <ign> - Teleport to a player's home location.");
+            sender.sendMessage(ChatColor.AQUA + "/home <player> - Teleport to another player's home location.");
         }
         if (sender.hasPermission("dsh.forcesave")) {
             sender.sendMessage(ChatColor.AQUA + "/dsh forcesave - Write every home to disk now.");
