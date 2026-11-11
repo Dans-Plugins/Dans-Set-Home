@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- `/dsh help` now lists `/home <player> - Teleport to another player's home location.` instead of `/home <ign> - Teleport to a player's home location.`, matching how `COMMANDS.md` and the user guide write the command. The command itself is unchanged
+
 ## [1.9.0] – 2026-11-08
 
 ### Fixed
