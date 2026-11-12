@@ -251,6 +251,121 @@ class HomeCommandTest {
     }
 
     @Test
+    void execute_ownNameWithoutOthersPermission_isRefusedLikeAnyOtherName() {
+        Player player = mock(Player.class);
+        when(player.getName()).thenReturn("Steve");
+        when(player.hasPermission("dsh.home")).thenReturn(true);
+        when(player.hasPermission("dsh.home.others")).thenReturn(false);
+        persistentData.addHomeRecord(recordFor("Steve", new Location(mock(World.class), 10, 20, 30)));
+
+        boolean result = homeCommand.execute(player, new String[]{"Steve"});
+
+        assertTrue(result);
+        verify(player).sendMessage(org.bukkit.ChatColor.RED + "You don't have permission to teleport to other players' homes.");
+        verify(scheduler, never()).runTaskLater(any(), any(Runnable.class), anyLong());
+    }
+
+    @Test
+    void execute_othersHomeWithOthersPermission_teleportsToThatPlayersHome() {
+        Player player = mock(Player.class);
+        when(player.getName()).thenReturn("Steve");
+        when(player.hasPermission("dsh.home")).thenReturn(true);
+        when(player.hasPermission("dsh.home.others")).thenReturn(true);
+        when(configManager.getTeleportDelaySeconds()).thenReturn(3);
+
+        World world = mock(World.class);
+        when(player.getLocation()).thenReturn(new Location(world, 1, 2, 3));
+        Location steveHome = new Location(world, 10, 20, 30);
+        Location alexHome = new Location(world, -40, 50, -60);
+        persistentData.addHomeRecord(recordFor("Steve", steveHome));
+        persistentData.addHomeRecord(recordFor("Alex", alexHome));
+
+        boolean result = homeCommand.execute(player, new String[]{"Alex"});
+
+        assertTrue(result);
+        verify(player).sendMessage(org.bukkit.ChatColor.GREEN + "Teleporting in 3 seconds...");
+        ArgumentCaptor<Runnable> taskCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(scheduler).runTaskLater(any(), taskCaptor.capture(), org.mockito.ArgumentMatchers.eq(60L));
+
+        taskCaptor.getValue().run();
+
+        verify(player).teleport(alexHome);
+        verify(player, never()).teleport(steveHome);
+    }
+
+    @Test
+    void execute_othersHome_matchesThePlayerNameWhateverItsCase() {
+        Player player = mock(Player.class);
+        when(player.getName()).thenReturn("Steve");
+        when(player.hasPermission("dsh.home")).thenReturn(true);
+        when(player.hasPermission("dsh.home.others")).thenReturn(true);
+        when(configManager.getTeleportDelaySeconds()).thenReturn(3);
+
+        World world = mock(World.class);
+        when(player.getLocation()).thenReturn(new Location(world, 1, 2, 3));
+        Location alexHome = new Location(world, -40, 50, -60);
+        persistentData.addHomeRecord(recordFor("Alex", alexHome));
+
+        homeCommand.execute(player, new String[]{"aLEX"});
+
+        ArgumentCaptor<Runnable> taskCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(scheduler).runTaskLater(any(), taskCaptor.capture(), anyLong());
+
+        taskCaptor.getValue().run();
+
+        verify(player).teleport(alexHome);
+    }
+
+    @Test
+    void execute_ownNameWithOthersPermissionAndNoHome_saysYouDontHaveAHome() {
+        Player player = mock(Player.class);
+        when(player.getName()).thenReturn("Steve");
+        when(player.hasPermission("dsh.home")).thenReturn(true);
+        when(player.hasPermission("dsh.home.others")).thenReturn(true);
+
+        boolean result = homeCommand.execute(player, new String[]{"steve"});
+
+        assertTrue(result);
+        verify(player).sendMessage(org.bukkit.ChatColor.RED + "You don't have a home set.");
+        verify(scheduler, never()).runTaskLater(any(), any(Runnable.class), anyLong());
+    }
+
+    @Test
+    void execute_lookingAroundDuringTheDelay_doesNotCancelTheTeleport() {
+        Player player = mock(Player.class);
+        when(player.getName()).thenReturn("Steve");
+        when(player.hasPermission("dsh.home")).thenReturn(true);
+        when(configManager.getTeleportDelaySeconds()).thenReturn(3);
+
+        World world = mock(World.class);
+        Location initialLocation = new Location(world, 1, 2, 3, 0f, 0f);
+        Location turnedLocation = new Location(world, 1, 2, 3, 135f, -45f);
+        Location homeLocation = new Location(world, 10, 20, 30);
+        when(player.getLocation()).thenReturn(initialLocation, turnedLocation);
+        persistentData.addHomeRecord(recordFor("Steve", homeLocation));
+
+        homeCommand.execute(player, new String[0]);
+
+        ArgumentCaptor<Runnable> taskCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(scheduler).runTaskLater(any(), taskCaptor.capture(), anyLong());
+
+        taskCaptor.getValue().run();
+
+        verify(player).teleport(homeLocation);
+        verify(player, never()).sendMessage(org.bukkit.ChatColor.RED + "Your teleport was cancelled because your location changed.");
+    }
+
+    @Test
+    void execute_withADelayOfZero_schedulesTheTeleportForTheNextTick() {
+        Player player = homeOwnerWithDelay(0);
+
+        homeCommand.execute(player, new String[0]);
+
+        verify(player).sendMessage(org.bukkit.ChatColor.GREEN + "Teleporting in 0 seconds...");
+        verify(scheduler).runTaskLater(any(), any(Runnable.class), org.mockito.ArgumentMatchers.eq(0L));
+    }
+
+    @Test
     void execute_saysSecondsForADelayOtherThanOne() {
         Player player = homeOwnerWithDelay(3);
 
