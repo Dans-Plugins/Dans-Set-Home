@@ -43,8 +43,8 @@ Details: https://danielstephenson.dev/usage-reporting
 ## bStats
 
 Separately from the usage reporting above, the plugin includes [bStats](https://bstats.org/) (plugin ID
-12126), which is also on by default. Five minutes after the plugin is enabled, and every 30 minutes
-after that, it sends https://bstats.org the plugin's name and version, a random server ID, the number
+12126), which is also on by default. Every 30 minutes, starting about five minutes after the server
+starts, it sends https://bstats.org the plugin's name and version, a random server ID, the number
 of players online, whether the server is in online mode, the server software and version, the Java
 version, the operating system's name, version and architecture, and the number of CPU cores. No
 player names or UUIDs are sent.
