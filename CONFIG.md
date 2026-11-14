@@ -37,3 +37,6 @@ further switches win over this file: `enabled: false` in `plugins/trace/config.y
 first time a plugin that reports this way starts) turns reporting off for every such plugin on the
 server, and the environment variables `TRACE_USAGE_REPORTING=off` or `DO_NOT_TRACK=1` turn it off
 for the whole process. Details: https://danielstephenson.dev/usage-reporting
+
+The plugin also includes bStats, which this file does not configure. See [bStats](README.md#bstats)
+in the README for what it sends and how to turn it off in `plugins/bStats/config.yml`.

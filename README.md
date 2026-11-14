@@ -39,3 +39,16 @@ To turn it off:
 - for the whole process: the environment variable `TRACE_USAGE_REPORTING=off` or `DO_NOT_TRACK=1`
 
 Details: https://danielstephenson.dev/usage-reporting
+
+## bStats
+
+Separately from the usage reporting above, the plugin includes [bStats](https://bstats.org/) (plugin ID
+12126), which is also on by default. Five minutes after the plugin is enabled, and every 30 minutes
+after that, it sends https://bstats.org the plugin's name and version, a random server ID, the number
+of players online, whether the server is in online mode, the server software and version, the Java
+version, the operating system's name, version and architecture, and the number of CPU cores. No
+player names or UUIDs are sent.
+
+bStats is configured in `plugins/bStats/config.yml` (created the first time a plugin using bStats
+starts), not in this plugin's `config.yml`. Set `enabled: false` there to turn it off for every
+plugin on the server that uses bStats.
