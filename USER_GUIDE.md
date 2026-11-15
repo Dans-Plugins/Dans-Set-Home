@@ -47,7 +47,7 @@ instead.
 
 | Permission | Default | Description |
 |------------|---------|-------------|
-| `dsh.help` | `true` | View the help menu. |
+| `dsh.help` | `true` | View the help menu. The console can always run `/dsh help`. |
 | `dsh.home` | `true` | Teleport to your home. |
 | `dsh.sethome` | `true` | Set your home location. |
 | `dsh.home.others` | `op` | Teleport to another player's home. |
