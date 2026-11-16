@@ -25,6 +25,10 @@ the length of the delay with the `teleport-delay-seconds` option described in
 
 Each player has one home. Running `/sethome` again replaces it with your current location.
 
+Homes are saved under your player name, not your account. If you change your Minecraft name
+(not just its capitalisation), `/home` no longer finds the home you set under the old name and
+tells you that you don't have a home set; run `/sethome` to set one under the new name. The old home is kept under the old name.
+
 If the world your home is in has been deleted from the server, `/home` tells you that the world
 no longer exists instead of teleporting you. The home is kept until you run `/sethome` again, so
 it works again if the world is restored.
