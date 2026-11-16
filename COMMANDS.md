@@ -12,6 +12,9 @@
 `/sethome` and `/home` can only be used by a player; the console is told "Only players can use this
 command."
 
+`/dsh` on its own replies "Try /dsh help", and `/dsh` followed by anything other than `help`,
+`forcesave` or `forceload` replies "Dans Set Home doesn't recognize that command. Try /dsh help".
+
 Each command can also be typed with the plugin's prefix: `/danssethome:sethome`,
 `/danssethome:home` and `/danssethome:dsh`. Use these forms when another plugin on the server also
 registers `/home` or `/sethome` and takes the short name.
