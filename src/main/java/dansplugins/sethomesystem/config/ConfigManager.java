@@ -1,8 +1,11 @@
 package dansplugins.sethomesystem.config;
 
+import dansplugins.sethomesystem.trace.UsageReportingSetting;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.File;
 
 public class ConfigManager {
     private static final String TELEPORT_DELAY_SECONDS_KEY = "teleport-delay-seconds";
@@ -33,6 +36,12 @@ public class ConfigManager {
      * exactly as it is.
      */
     public void saveUsageReportingDefaultsIfMissing() {
+        // Bukkit loads a config.yml it cannot parse as empty, so the block looks missing even
+        // when the operator wrote enabled: false in it. Writing the defaults here would replace
+        // the whole file, opt-out included.
+        if (UsageReportingSetting.isUnparseable(getConfigFile())) {
+            return;
+        }
         FileConfiguration config = plugin.getConfig();
         if (config.isSet(USAGE_REPORTING_SECTION_KEY)) {
             return;
@@ -61,8 +70,18 @@ public class ConfigManager {
     // reporting off on every existing installation. Verified against
     // YamlConfiguration, not assumed.
 
+    /**
+     * Fails closed: only true, on or yes turns reporting on, so a quoted "false" or a typo
+     * turns it off (getBoolean() would return the bundled true for them), and an opt-out in
+     * config.yml on disk wins over the copy loaded at startup.
+     */
     public boolean isUsageReportingEnabled() {
-        return plugin.getConfig().getBoolean(USAGE_REPORTING_ENABLED_KEY);
+        return UsageReportingSetting.isEnabled(plugin.getConfig(), getConfigFile());
+    }
+
+    /** The plugin's config.yml, which may not exist yet. */
+    public File getConfigFile() {
+        return new File(plugin.getDataFolder(), "config.yml");
     }
 
     public String getUsageReportingEndpoint() {
