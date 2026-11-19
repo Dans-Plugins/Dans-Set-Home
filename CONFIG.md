@@ -12,7 +12,7 @@ those files moved across automatically the first time the plugin starts.
 | Key | Default | Description |
 |-----|---------|-------------|
 | `teleport-delay-seconds` | `3` | Number of seconds a player must stand still after running `/home` before being teleported. `0` teleports on the next tick; a negative value counts as `0`. |
-| `usage-reporting.enabled` | `true` | Whether the plugin reports usage events (see below). Set to `false` to turn it off. |
+| `usage-reporting.enabled` | `true` | Whether the plugin reports usage events (see below). Set to `false` to turn it off. Only `true`, `on` or `yes` turns it on; any other value, including a quoted `"false"`, turns it off, and the plugin never writes the switch back on once it is off in the file. |
 | `usage-reporting.endpoint` | `https://trace.danielstephenson.dev` | The trace server events are sent to. |
 | `usage-reporting.key` | the plugin's key | Identifies this plugin to the trace server so reports are attributed to it. Not a secret: it ships in the default config and can only report as DansSetHome. Empty means reporting is off regardless of `enabled`. |
 
@@ -32,7 +32,9 @@ server cannot be reached. Set `usage-reporting.enabled` to `false` to turn it of
 on every startup whether reporting is on, and why not when it is off.
 
 A `config.yml` written by a version before the block existed is completed with the bundled
-`usage-reporting` values the next time the plugin starts, so the switch is always on disk. Two
+`usage-reporting` values the next time the plugin starts, so the switch is always on disk. A
+`config.yml` with a YAML error in it is never overwritten; the console says so, and reporting stays
+off until the error is fixed. Two
 further switches win over this file: `enabled: false` in `plugins/trace/config.yml` (created the
 first time a plugin that reports this way starts) turns reporting off for every such plugin on the
 server, and the environment variables `TRACE_USAGE_REPORTING=off` or `DO_NOT_TRACK=1` turn it off

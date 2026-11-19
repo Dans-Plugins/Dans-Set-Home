@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Usage reporting can no longer be turned back on by the plugin once it has been turned off. A `config.yml` with a YAML error in it is loaded by Bukkit as empty, so the plugin saw no `usage-reporting` block and wrote the bundled one (with `enabled: true`) over the whole file on startup, opt-out included. Such a file is now never overwritten: the console says so and reporting stays off until the error is fixed. Every save of `config.yml` also checks the file on disk first and keeps an opt-out written there while the server was running. A quoted value such as `enabled: "false"` was read as on; now only `true`, `on` or `yes` turns reporting on, and any other value turns it off
+- The vendored trace client is now 0.8.0, in which every opt-out fails closed: in `plugins/trace/config.yml` a quoted `enabled: "false"`, an empty `enabled:`, a typo, or a later `enabled: false` under an earlier `enabled: true` now turn reporting off, as does a file that is there but cannot be read; `TRACE_USAGE_REPORTING` set to anything but blank or `true`/`on`/`yes`/`1`, `DO_NOT_TRACK` set to anything but blank or `0`/`false`/`off`/`no`, and an environment that cannot be read now turn it off too. Details: https://github.com/Stephenson-Software/trace-client-java/pull/51
+
 ### Changed
 
 - `/dsh help` now lists `/home <player> - Teleport to another player's home location.` instead of `/home <ign> - Teleport to a player's home location.`, matching how `COMMANDS.md` and the user guide write the command. The command itself is unchanged

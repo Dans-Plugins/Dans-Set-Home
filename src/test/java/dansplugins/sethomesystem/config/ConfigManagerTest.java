@@ -5,6 +5,11 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -24,11 +29,15 @@ class ConfigManagerTest {
     private FileConfiguration config;
     private ConfigManager configManager;
 
+    @TempDir
+    File dataFolder;
+
     @BeforeEach
     void setUp() {
         plugin = mock(JavaPlugin.class);
         config = mock(FileConfiguration.class);
         when(plugin.getConfig()).thenReturn(config);
+        when(plugin.getDataFolder()).thenReturn(dataFolder);
         configManager = new ConfigManager(plugin);
     }
 
@@ -74,7 +83,7 @@ class ConfigManagerTest {
         // block in its config.yml. Bukkit's one-argument getters fall through
         // to the jar's defaults; the two-argument ones would return their
         // fallback and turn reporting off on every existing installation.
-        when(config.getBoolean("usage-reporting.enabled")).thenReturn(true);
+        when(config.get("usage-reporting.enabled")).thenReturn(true);
         when(config.getString("usage-reporting.endpoint")).thenReturn("https://trace.danielstephenson.dev");
         when(config.getString("usage-reporting.key")).thenReturn("bundled-key");
 
@@ -149,12 +158,51 @@ class ConfigManagerTest {
 
     @Test
     void usageReporting_readsTheConfiguredValues() {
-        when(config.getBoolean("usage-reporting.enabled")).thenReturn(false);
+        when(config.get("usage-reporting.enabled")).thenReturn(false);
         when(config.getString("usage-reporting.endpoint")).thenReturn("http://localhost:8080");
         when(config.getString("usage-reporting.key")).thenReturn("abc");
 
         assertFalse(configManager.isUsageReportingEnabled());
         assertEquals("http://localhost:8080", configManager.getUsageReportingEndpoint());
         assertEquals("abc", configManager.getUsageReportingKey());
+    }
+
+    @Test
+    void usageReporting_aQuotedFalseTurnsReportingOff() {
+        // getBoolean() would return the bundled default, true, for the string "false".
+        when(config.get("usage-reporting.enabled")).thenReturn("false");
+
+        assertFalse(configManager.isUsageReportingEnabled());
+    }
+
+    @Test
+    void usageReporting_anOptOutOnDiskWinsOverTheLoadedConfig() throws Exception {
+        // The operator turned reporting off by hand after the config was loaded.
+        writeConfig("usage-reporting:\n  enabled: false\n");
+        when(config.get("usage-reporting.enabled")).thenReturn(true);
+
+        assertFalse(configManager.isUsageReportingEnabled());
+    }
+
+    @Test
+    void saveUsageReportingDefaultsIfMissing_neverWritesOverAFileBukkitCannotParse() throws Exception {
+        // Bukkit loads such a file as empty, so the block looks missing.
+        writeConfig("usage-reporting:\n  enabled: false\n\tbroken: [\n");
+        YamlConfiguration loadedAsEmpty = new YamlConfiguration();
+        YamlConfiguration bundled = new YamlConfiguration();
+        bundled.set("usage-reporting.enabled", true);
+        bundled.set("usage-reporting.key", "bundled-key");
+        loadedAsEmpty.setDefaults(bundled);
+        when(plugin.getConfig()).thenReturn(loadedAsEmpty);
+
+        configManager.saveUsageReportingDefaultsIfMissing();
+
+        verify(plugin, never()).saveConfig();
+        assertFalse(loadedAsEmpty.isSet("usage-reporting"));
+        assertFalse(configManager.isUsageReportingEnabled(), "a file that cannot be read must keep reporting off");
+    }
+
+    private void writeConfig(String contents) throws Exception {
+        Files.write(new File(dataFolder, "config.yml").toPath(), contents.getBytes(StandardCharsets.UTF_8));
     }
 }

@@ -6,6 +6,7 @@ import dansplugins.sethomesystem.data.PersistentData;
 import dansplugins.sethomesystem.services.CommandService;
 import dansplugins.sethomesystem.services.StorageService;
 import dansplugins.sethomesystem.trace.TraceClient;
+import dansplugins.sethomesystem.trace.UsageReportingSetting;
 import dansplugins.sethomesystem.utils.EventRegistry;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -13,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.util.Collections;
 
 public class MedievalSetHome extends JavaPlugin implements Listener {
@@ -81,6 +83,24 @@ public class MedievalSetHome extends JavaPlugin implements Listener {
         } else {
             getLogger().info("Usage reporting is off (" + trace.disabledReason() + ").");
         }
+    }
+
+    /**
+     * Every save of config.yml goes through here. A file Bukkit could not parse was loaded as
+     * empty, so saving would replace it with the bundled defaults, usage reporting switched on
+     * included; it is left alone instead. An opt-out written into the file by hand while the
+     * server runs is carried into the loaded copy first, so a save cannot turn reporting back on.
+     */
+    @Override
+    public void saveConfig() {
+        File configFile = new File(getDataFolder(), "config.yml");
+        if (UsageReportingSetting.isUnparseable(configFile)) {
+            getLogger().severe("config.yml could not be read, so it was not overwritten. Fix the YAML error in it and restart; "
+                    + "until then the defaults are used, and usage reporting is off.");
+            return;
+        }
+        UsageReportingSetting.keepOptOutFromDisk(getConfig(), configFile);
+        super.saveConfig();
     }
 
     @Override
