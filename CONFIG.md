@@ -9,6 +9,14 @@ by hand and picked up on the next start or `/dsh forceload`, until the player ru
 replaces it. Servers upgrading from a version that stored homes in `plugins/Medieval-Set-Home/` have
 those files moved across automatically the first time the plugin starts.
 
+Homes are read on every start and on `/dsh forceload`, and reading a home looks up its world. A
+world that is not loaded but whose folder is still in the server's world container is loaded at that
+point, even if the server or a world-management plugin keeps it unloaded on purpose (see
+[#131](https://github.com/Dans-Plugins/Dans-Set-Home/issues/131)). A home whose world has no folder
+there is reported in the server log, naming the player and the world, and is not loaded. No new world
+is generated under that name. The home is kept on disk until the player runs `/sethome`, so it loads
+again if the world is restored. Until then, `/home` says the world no longer exists.
+
 | Key | Default | Description |
 |-----|---------|-------------|
 | `teleport-delay-seconds` | `3` | Number of seconds a player must stand still after running `/home` before being teleported. `0` teleports on the next tick; a negative value counts as `0`. |
